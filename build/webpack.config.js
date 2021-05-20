@@ -2,27 +2,54 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
+const CompressPlugin = require('compression-webpack-plugin')
+
+const isProd = process.env.NODE_ENV === 'production'
+
+const SOURCE_DIR = path.resolve(__dirname, '../src')
+const DIST_DIR = path.resolve(__dirname, '../dist')
 
 module.exports = {
+  mode: isProd ? 'production' : 'development',
+  devtool: !isProd && 'cheap-source-map',
   entry: {
-    app: path.resolve(__dirname, '../src/main.js')
+    app: path.resolve(__dirname, '../src/main.ts')
   },
   output: {
-    filename: 'index.js',
-    path: path.resolve(__dirname, '../dist')
+    filename: 'index.[contenthash:8].js',
+    path: DIST_DIR
   },
-  devtool: 'inline-source-map',
+  externals: {
+    phaser: 'Phaser',
+  },
   devServer: {
     inline: true,
     hot: true,
     stats: 'minimal',
-    contentBase: path.resolve(__dirname, '../dist'),
-    overlay: true
+    contentBase: DIST_DIR,
+    overlay: true,
+    watchOptions: {
+      ignored: [
+        DIST_DIR,
+        path.resolve(__dirname, '../node_modules')
+      ]
+    }
   },
   optimization: {
     minimize: true,
     minimizer: [
-      new CssMinimizerPlugin()
+      new CssMinimizerPlugin(),
+      new TerserPlugin({
+        parallel: true,
+        terserOptions: {
+          ecma: 5,
+          sourceMap: false,
+          compress: {
+            drop_console: true
+          }
+        }
+      })
     ]
   },
   resolve: {
@@ -31,8 +58,8 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.ts$/,
-        use: 'ts-loader',
+        test: /\.(ts|js)?$/,
+        use: 'babel-loader',
         exclude: /node_module/
       },
       {
@@ -42,11 +69,32 @@ module.exports = {
           { loader: 'css-loader' }
         ],
       },
-
+      {
+        test: /\.(svg|otf|ttf|woff2?|eot|gif|png|jpe?g)(\?\S*)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+          name: path.posix.join('static', '[name].[hash:7].[ext]'),
+        }
+      },
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin()
-  ],
-  // externals: [{}]
+    new HtmlWebpackPlugin({
+      title: 'double eleven game',
+      cdn: {
+        js: ['https://cdn.bootcdn.net/ajax/libs/phaser/3.54.0/phaser.min.js'],
+        css: ['https://cdn.bootcdn.net/ajax/libs/modern-normalize/1.0.0/modern-normalize.min.css']
+      },
+      template: path.resolve(__dirname, '../index.html'),
+      minify: true
+    }),
+    new CompressPlugin({
+      algorithm: 'gzip',
+      test: /\.(js|css|html)$/,
+      threshold: 10000,
+      deleteOriginalAssets: false,
+      minRatio: 0.8
+    })
+  ]
 }

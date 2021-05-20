@@ -6,8 +6,13 @@
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title><%= htmlWebpackPlugin.options.title %></title>
+  <% for (const i in htmlWebpackPlugin.options.cdn && htmlWebpackPlugin.options.cdn.css) { %>
+  <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.cdn.css[i] %>">
+  <% } %>
+  <% for (const i in htmlWebpackPlugin.options.cdn && htmlWebpackPlugin.options.cdn.js) { %>
+  <script defer type="text/javascript" src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"></script>
+  <% } %>
 </head>
 <body>
-
 </body>
 </html>
