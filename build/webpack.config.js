@@ -12,12 +12,12 @@ const DIST_DIR = path.resolve(__dirname, '../dist')
 
 module.exports = {
   mode: isProd ? 'production' : 'development',
-  devtool: !isProd && 'cheap-source-map',
+  devtool: !isProd && 'eval-source-map',
   entry: {
     app: path.resolve(__dirname, '../src/main.ts')
   },
   output: {
-    filename: 'index.[contenthash:8].js',
+    filename: 'index.[contenthash:8].min.js',
     path: DIST_DIR
   },
   externals: {
@@ -29,11 +29,20 @@ module.exports = {
     stats: 'minimal',
     contentBase: DIST_DIR,
     overlay: true,
+    port: 7000,
     watchOptions: {
       ignored: [
         DIST_DIR,
         path.resolve(__dirname, '../node_modules')
       ]
+    },
+    proxy: {
+      '/assets': {
+        target: 'http://localhost/11-game',
+        pathRewrite: {
+          '^/assets': ''
+        }
+      },
     }
   },
   optimization: {
@@ -53,12 +62,20 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js'],
+    alias: {
+      '@': SOURCE_DIR
+    }
   },
   module: {
     rules: [
       {
-        test: /\.(ts|js)?$/,
+        test: /\.ts$/,
+        loader: 'ts-loader',
+        exclude: /node_module/
+      },
+      {
+        test: /\.js$/,
         use: 'babel-loader',
         exclude: /node_module/
       },
