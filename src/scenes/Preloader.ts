@@ -8,25 +8,26 @@ export default class Preloader extends Phaser.Scene {
     super(Scenes.PRELOADER)
   }
 
-  preload () {
-    this.load.image(Texture.Background.Midground, 'assets/background/bg_midground.png')
-    this.load.image(Texture.Background.Foreground, 'assets/background/bg_foreground.png')
-    this.load.image(Texture.Background.Sky, 'assets/background/bg_sky.png')
+  public preload () {
+    this.loadBackground()
 
-    this.load.atlas(Texture.NinjaCat,
+    this.load.image(Texture.Object.Igloo, 'assets/object/igloo.png')
+
+    this.load.atlas(Texture.NinjaCat.Walk,
       'assets/characters/ninja-cat-walk.png',
       'assets/characters/ninja-cat-walk.json'
     )
+
+    this.load.atlas(Texture.NinjaCat.Jump,
+      'assets/characters/ninja-cat-jump.png',
+      'assets/characters/ninja-cat-jump.json'
+    )
   }
 
-  create () {
-    this.add.image(0, 0, Texture.Background.Sky).setOrigin(0, 0)
-    this.add.image(0, 0, Texture.Background.Midground).setOrigin(0, 0)
-    this.add.image(0, 88, Texture.Background.Foreground).setOrigin(0, 0)
-
+  public create () {
     this.anims.create({
-      key: Animates.NinjaCatWalk,
-      frames: this.anims.generateFrameNames(Texture.NinjaCat, {
+      key: Animates.NinjaCat.Walk,
+      frames: this.anims.generateFrameNames(Texture.NinjaCat.Walk, {
         start: 1,
         end: 8,
         prefix: 'NinjaCat_walk_',
@@ -37,6 +38,25 @@ export default class Preloader extends Phaser.Scene {
       repeat: -1
     })
 
+    this.anims.create({
+      key: Animates.NinjaCat.Jump,
+      frames: this.anims.generateFrameNames(Texture.NinjaCat.Jump, {
+        start: 1,
+        end: 6,
+        prefix: 'NinjaCat_jump_',
+        zeroPad: 2,
+        suffix: '.png'
+      }),
+      frameRate: 15,
+      repeat: 0
+    })
+
     this.scene.start(Scenes.GAME)
+  }
+
+  protected loadBackground () {
+    this.load.image(Texture.Background.Midground, 'assets/background/bg_midground.png')
+    this.load.image(Texture.Background.Foreground, 'assets/background/bg_foreground.png')
+    this.load.image(Texture.Background.Sky, 'assets/background/bg_sky.png')
   }
 }
