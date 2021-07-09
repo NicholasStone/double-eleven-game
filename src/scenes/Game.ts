@@ -1,16 +1,17 @@
 import Phaser from 'phaser'
 import Texture from '@/constants/texture'
 import Scenes from '@/constants/scenes'
-import Animates from '@/constants/animates'
 import NinjaCat from '@/game/NinjaCat'
 
 export default class Game extends Phaser.Scene {
-
   protected cat!: NinjaCat
+
   protected sky!: Phaser.GameObjects.TileSprite
   protected midBackground!: Phaser.GameObjects.TileSprite
   protected foreBackground!: Phaser.GameObjects.TileSprite
+
   protected igloo!: Phaser.GameObjects.Image
+  protected iceberg!: Phaser.GameObjects.Image
 
   constructor () {
     super(Scenes.GAME)
@@ -20,11 +21,8 @@ export default class Game extends Phaser.Scene {
     const { width, height } = this.scale
     this.addBackground()
 
-    this.igloo = this.add.image(
-      Phaser.Math.Between(900, 1500),
-      Phaser.Math.Between(500, 620),
-      Texture.Object.Igloo
-    )
+    this.igloo = this.add.image(Phaser.Math.Between(900, 1500), Phaser.Math.Between(500, 620), Texture.Object.Igloo)
+    this.iceberg = this.add.image(Phaser.Math.Between(900, 1500), height - 30, Texture.Object.Iceberg).setOrigin(0, 1)
 
     this.physics.world.setBounds(0, 0, Number.MAX_SAFE_INTEGER, height - 30)
 

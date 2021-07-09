@@ -12,6 +12,7 @@ export default class Preloader extends Phaser.Scene {
     this.loadBackground()
 
     this.load.image(Texture.Object.Igloo, 'assets/object/igloo.png')
+    this.load.image(Texture.Object.Iceberg, 'assets/object/iceberg.png')
 
     this.load.atlas(Texture.NinjaCat.Walk,
       'assets/characters/ninja-cat-walk.png',
