@@ -4,9 +4,11 @@ html, body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	background-color: #333;
 }
 
-/*canvas {*/
-/*	height: 100vh;*/
-/*	width: auto;*/
-/*}*/
+canvas {
+	height: 100vh;
+	max-height: 768px;
+	width: auto;
+}

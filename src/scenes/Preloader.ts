@@ -11,47 +11,18 @@ export default class Preloader extends Phaser.Scene {
   public preload () {
     this.loadBackground()
 
+    this.load.image(Texture.Image.Wasted, 'assets/images/wasted.png')
+
     this.load.image(Texture.Object.Igloo, 'assets/object/igloo.png')
-    this.load.image(Texture.Object.Iceberg, 'assets/object/iceberg.png')
+    this.load.image(Texture.Object.Obstacle, 'assets/object/iceberg.png')
+    this.load.atlas(Texture.Object.IceBlock, 'assets/block/block-ground.png', 'assets/block/block-ground.json')
 
-    this.load.atlas(Texture.NinjaCat.Walk,
-      'assets/characters/ninja-cat-walk.png',
-      'assets/characters/ninja-cat-walk.json'
-    )
-
-    this.load.atlas(Texture.NinjaCat.Jump,
-      'assets/characters/ninja-cat-jump.png',
-      'assets/characters/ninja-cat-jump.json'
-    )
+    this.load.image(Texture.Charactor.Husky, 'assets/characters/husky.png')
+    this.load.image(Texture.Charactor.Samoyed, 'assets/characters/samoyed.png')
+    this.load.image(Texture.Charactor.Akita, 'assets/characters/akita.png')
   }
 
   public create () {
-    this.anims.create({
-      key: Animates.NinjaCat.Walk,
-      frames: this.anims.generateFrameNames(Texture.NinjaCat.Walk, {
-        start: 1,
-        end: 8,
-        prefix: 'NinjaCat_walk_',
-        zeroPad: 2,
-        suffix: '.png'
-      }),
-      frameRate: 15,
-      repeat: -1
-    })
-
-    this.anims.create({
-      key: Animates.NinjaCat.Jump,
-      frames: this.anims.generateFrameNames(Texture.NinjaCat.Jump, {
-        start: 1,
-        end: 6,
-        prefix: 'NinjaCat_jump_',
-        zeroPad: 2,
-        suffix: '.png'
-      }),
-      frameRate: 15,
-      repeat: 0
-    })
-
     this.scene.start(Scenes.GAME)
   }
 

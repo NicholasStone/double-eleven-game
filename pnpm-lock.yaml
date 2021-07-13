@@ -4,6 +4,7 @@ specifiers:
   '@babel/plugin-proposal-class-properties': ^7.13.0
   '@babel/plugin-proposal-object-rest-spread': ^7.14.2
   '@babel/preset-env': ^7.14.2
+  '@types/lodash': ^4.14.171
   '@types/node': ^15.6.1
   '@typescript-eslint/eslint-plugin': ^4.24.0
   '@typescript-eslint/parser': ^4.24.0
@@ -20,6 +21,7 @@ specifiers:
   eslint-plugin-promise: ^4.2.1
   file-loader: ^6.2.0
   html-webpack-plugin: ^5.3.1
+  lodash: ^4.17.21
   mini-css-extract-plugin: ^1.6.0
   phaser: ^3.54.0
   rimraf: ^3.0.2
@@ -34,6 +36,8 @@ specifiers:
   webpack-dev-server: ^3.11.2
 
 dependencies:
+  '@types/lodash': registry.nlark.com/@types/lodash/4.14.171
+  lodash: 4.17.21
   phaser: registry.nlark.com/phaser/3.54.0
 
 devDependencies:
@@ -3098,8 +3102,7 @@ packages:
     dev: true
 
   /lodash/4.17.21:
-    resolution: {integrity: sha1-Z5WRxWTDv/quhFTPCz3zcMPWkRw=, tarball: lodash/download/lodash-4.17.21.tgz?cache=0&sync_timestamp=1613897769805&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Flodash%2Fdownload%2Flodash-4.17.21.tgz}
-    dev: true
+    resolution: {integrity: sha1-Z5WRxWTDv/quhFTPCz3zcMPWkRw=, tarball: lodash/download/lodash-4.17.21.tgz}
 
   /loglevel/1.7.1:
     resolution: {integrity: sha1-AF/eL15uRwaPk1/yhXPhJe9y8Zc=, tarball: loglevel/download/loglevel-1.7.1.tgz}
@@ -5911,6 +5914,12 @@ packages:
     name: '@types/json-schema'
     version: 7.0.7
     dev: true
+
+  registry.nlark.com/@types/lodash/4.14.171:
+    resolution: {integrity: sha1-8Bs6X+NJnjS2IsNipGpgn9sjVzs=, registry: https://registry.npm.taobao.org/, tarball: https://registry.nlark.com/@types/lodash/download/@types/lodash-4.14.171.tgz}
+    name: '@types/lodash'
+    version: 4.14.171
+    dev: false
 
   registry.nlark.com/@types/minimatch/3.0.4:
     resolution: {integrity: sha1-8Owl2/Lw5LGGRzE6wDETTKWySyE=, registry: https://registry.npm.taobao.org/, tarball: https://registry.nlark.com/@types/minimatch/download/@types/minimatch-3.0.4.tgz?cache=0&sync_timestamp=1621242881743&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fminimatch%2Fdownload%2F%40types%2Fminimatch-3.0.4.tgz}
