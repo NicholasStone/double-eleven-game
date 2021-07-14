@@ -8,7 +8,7 @@ namespace NumberSettings {
   /**
    * 摄像机偏移量
    */
-  export const CameraOffsetX = Width * -0.2
+  export const CameraOffsetX = Width * -0.4
 
   /**
    * 上下边界高度
@@ -33,7 +33,8 @@ namespace NumberSettings {
    * @LootBoxInterval {number} 宝箱间隔（每n个障碍物）
    */
   export const ObstacleInterval = 160
-  export const LootBoxInterval = 20
+  export const LootBoxInterval = 7
+  export const DistanceBetweenObstacleAndLootBox = Width * 0.7
 }
 
 export default NumberSettings

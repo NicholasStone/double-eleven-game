@@ -12,6 +12,10 @@ export default class Game extends Phaser.Scene {
   protected foreBackground!: Phaser.GameObjects.TileSprite
 
   protected allObstacles: Array<Phaser.GameObjects.Image> = []
+  protected nextObstaclePosition = NumberSettings.ObstacleInterval
+
+  protected nextLootBox = NumberSettings.LootBoxInterval - 1
+  protected lootBox: Array<Phaser.GameObjects.Image> = []
 
   constructor () {
     super(Scenes.GAME)
@@ -28,7 +32,7 @@ export default class Game extends Phaser.Scene {
 
     this.physics.world.setBounds(0, NumberSettings.BorderHeight, Number.MAX_SAFE_INTEGER, height - NumberSettings.BorderHeight * 2)
 
-    this.doge = new Doge(this, width * 0.5, height * 0.5)
+    this.doge = new Doge(this, width * 0.5, height * 0.3)
     this.add.existing(this.doge)
 
     this.setCamera()
@@ -36,7 +40,7 @@ export default class Game extends Phaser.Scene {
 
   public update (time: number, delta: number) {
     this.moveBackground()
-    this.wrapObstacle()
+    this.wrapObstacleAndLootBox()
   }
 
   protected setCamera () {
@@ -66,7 +70,7 @@ export default class Game extends Phaser.Scene {
     this.foreBackground.setTilePosition(this.cameras.main.scrollX * 1.2)
   }
 
-  protected wrapObstacle () {
+  protected wrapObstacleAndLootBox () {
     if (this.scene.isActive(Scenes.GAMEOVER)) return
 
     const { height } = this.scale
@@ -76,19 +80,39 @@ export default class Game extends Phaser.Scene {
 
     const lastObstacle = this.allObstacles[this.allObstacles.length - 1]
 
-    // 添加新的障碍物
-    if (rightEdge - lastObstacle.x - NumberSettings.CameraOffsetX > NumberSettings.ObstacleInterval) {
-      const newObstacle = this.add.image(rightEdge + 10 - NumberSettings.CameraOffsetX, height - 30, Texture.Object.Obstacle).setOrigin(0, 1)
-      this.allObstacles.push(newObstacle)
-    }
+    /**
+     * 在右边界和最后一个障碍物的距离大于设定值时，添加下一个障碍物
+     */
+    if (!this.nextLootBox) {
+      const lootBoxUpper = this.add.image(rightEdge + NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2, height * 0.4, Texture.Charactor.Husky).setOrigin(0, 1)
+      const lootBoxLower = this.add.image(rightEdge + NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2, height * 0.8, Texture.Charactor.Husky).setOrigin(0, 1)
 
-    // 干掉没有用的障碍物
-    for (const obstacle of this.allObstacles) {
-      if (obstacle.x - obstacle.width - 20 < leftEdge) {
-        const index = this.allObstacles.indexOf(obstacle)
-        this.allObstacles.splice(index, 1)
-        obstacle.destroy()
+      this.nextLootBox = NumberSettings.LootBoxInterval
+      this.nextObstaclePosition = NumberSettings.DistanceBetweenObstacleAndLootBox
+    } else if (rightEdge - lastObstacle.x - NumberSettings.CameraOffsetX > this.nextObstaclePosition) {
+      // 添加新的障碍物
+      this.setObstacle(rightEdge, height)
+      this.nextObstaclePosition = NumberSettings.ObstacleInterval
+
+      // 干掉没有用的障碍物
+      for (const obstacle of this.allObstacles) {
+        if (obstacle.x - obstacle.width - 20 < leftEdge) {
+          this.clearObstacle(obstacle)
+        }
       }
+
+      this.nextLootBox--
     }
+  }
+
+  private clearObstacle (obstacle: Phaser.GameObjects.Image) {
+    const index = this.allObstacles.indexOf(obstacle)
+    this.allObstacles.splice(index, 1)
+    obstacle.destroy()
+  }
+
+  private setObstacle (rightEdge: number, height: number) {
+    const newObstacle = this.add.image(rightEdge + 10 - NumberSettings.CameraOffsetX, height - 30, Texture.Object.Obstacle).setOrigin(0, 1)
+    this.allObstacles.push(newObstacle)
   }
 }

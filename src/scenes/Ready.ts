@@ -8,7 +8,7 @@ export default class Ready extends Phaser.Scene {
 
   create () {
     const { width, height } = this.scale
-    this.add.text(width * 0.5, height * 0.5, '点击屏幕开始游戏', {
+    this.add.text(width * 0.5, height * 0.5, '点击屏幕或点击空格开始游戏', {
       padding: {
         left: 15,
         right: 15,
@@ -17,5 +17,16 @@ export default class Ready extends Phaser.Scene {
       },
       fontSize: '42px'
     }).setOrigin(0.5, 0.5)
+
+    const gameStart = () => {
+      this.scene.start(Scenes.GAME)
+
+      this.input.keyboard.off('keyup-SPACE', gameStart)
+      this.input.off('pointerup', gameStart)
+    }
+
+    this.input.keyboard.once('keyup-SPACE', gameStart)
+
+    this.input.once('pointerup', gameStart)
   }
 }
