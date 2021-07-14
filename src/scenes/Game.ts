@@ -28,7 +28,7 @@ export default class Game extends Phaser.Scene {
 
     this.physics.world.setBounds(0, NumberSettings.BorderHeight, Number.MAX_SAFE_INTEGER, height - NumberSettings.BorderHeight * 2)
 
-    this.doge = new Doge(this, width - NumberSettings.CameraOffsetX, height * 0.5)
+    this.doge = new Doge(this, width * 0.5, height * 0.5)
     this.add.existing(this.doge)
 
     this.setCamera()

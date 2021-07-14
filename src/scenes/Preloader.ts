@@ -23,7 +23,7 @@ export default class Preloader extends Phaser.Scene {
   }
 
   public create () {
-    this.scene.start(Scenes.GAME)
+    this.scene.start(Scenes.READY)
   }
 
   protected loadBackground () {

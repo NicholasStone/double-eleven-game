@@ -2,13 +2,13 @@ namespace NumberSettings {
   /**
    * 画布大小
    */
-  export const Width = 1200
+  export const Width = 1000
   export const Height = 560
 
   /**
    * 摄像机偏移量
    */
-  export const CameraOffsetX = -500
+  export const CameraOffsetX = Width * -0.2
 
   /**
    * 上下边界高度
@@ -23,7 +23,7 @@ namespace NumberSettings {
   export const GravityX = 1
 
   /**
-   * 每跳一次增加的速度，
+   * 每跳一次增加的速度
    */
   export const GoUpVelocity = Height * -0.8
 
