@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 import Texture from '@/constants/texture'
 import Scenes from '@/constants/scenes'
-import Animates from '@/constants/animates'
+// import Animates from '@/constants/animates'
 
 export default class Preloader extends Phaser.Scene {
   constructor () {

@@ -2,28 +2,72 @@ import Phaser from 'phaser'
 
 import Texture from '@/constants/texture'
 import NumberSettings from '@/constants/number-settings'
-import DogeState from '@/constants/doge'
+import DogeProperty from '@/constants/doge-property'
 import Scenes from '@/constants/scenes'
 
 export default class Doge extends Phaser.GameObjects.Container {
-  protected doge!: Phaser.GameObjects.Image
-  protected objectBody!: Phaser.Physics.Arcade.Body
-  protected objectState: DogeState = DogeState.Forward
+  private _objectState: DogeProperty.State = DogeProperty.State.Forward
+  private _buff: DogeProperty.Buff = DogeProperty.Buff.NONE
+  private _objectGravityY = NumberSettings.GravityY
+
+  protected object!: Phaser.GameObjects.Image
+  objectBody!: Phaser.Physics.Arcade.Body
+
   protected bindJump!: Function
+  protected jumpVelocity = NumberSettings.GoUpVelocity
+
+  get objectState (): DogeProperty.State {
+    return this._objectState
+  }
+
+  set objectState (value: DogeProperty.State) {
+    this._objectState = value
+  }
+
+  get buff (): DogeProperty.Buff {
+    return this._buff
+  }
+
+  set buff (value: DogeProperty.Buff) {
+    this._buff = value
+
+    switch (value) {
+      case DogeProperty.Buff.MOER_GRAVITY:
+        this.objectBody.setGravityY(NumberSettings.GravityY - NumberSettings.LessGravityDiff)
+        break
+      case DogeProperty.Buff.LESS_GRAVITY:
+        this.objectBody.setGravityY(NumberSettings.GravityY + NumberSettings.MoreGravityDiff)
+        break
+      case DogeProperty.Buff.LESS_UPPER_VELOCITY:
+    }
+  }
+
+  get objectGravityY (): number {
+    return this._objectGravityY
+  }
+
+  set objectGravityY (value: number) {
+    console.log(value)
+    if (this._objectGravityY === value) return
+
+    this._objectGravityY = value
+    this.objectBody.setGravityY(value)
+  }
 
   constructor (scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y)
 
-    this.doge = scene.add.image(0, 0, Texture.Charactor.Akita).setOrigin(0, 0)
-    this.add(this.doge)
+    this.object = scene.add.image(0, 0, Texture.Charactor.Akita).setOrigin(0, 0)
+    this.add(this.object)
 
     scene.physics.add.existing(this)
 
     this.objectBody = this.body as Phaser.Physics.Arcade.Body
-    this.objectBody.setSize(this.doge.width, this.doge.height)
+    this.objectBody.setSize(this.object.width, this.object.height)
     this.objectBody.setCollideWorldBounds(true)
     this.objectBody.setVelocityX(200)
-    this.objectBody.setGravity(NumberSettings.GravityX, NumberSettings.GravityY)
+    this.objectBody.setGravityX(NumberSettings.GravityX)
+    this.objectGravityY = NumberSettings.GravityY
 
     this.bindJump = this.jump.bind(this)
 
@@ -34,10 +78,10 @@ export default class Doge extends Phaser.GameObjects.Container {
   preUpdate () {
     if (this.scene.scene.isActive(Scenes.GAMEOVER)) return
 
-    switch (this.objectState) {
-      case DogeState.Dead:
+    switch (this._objectState) {
+      case DogeProperty.State.Dead:
         break
-      case DogeState.Forward:
+      case DogeProperty.State.Forward:
         if (this.objectBody.blocked.down || this.objectBody.blocked.up) {
           this.dead()
         }
@@ -45,7 +89,8 @@ export default class Doge extends Phaser.GameObjects.Container {
     }
   }
 
-  protected dead () {
+  dead () {
+    if (this.buff === DogeProperty.Buff.INVINCIBLE) return
     this.objectBody.setGravity(0, 0)
     this.objectBody.setVelocity(0)
     this.objectBody.setAcceleration(0, 0)
@@ -56,9 +101,9 @@ export default class Doge extends Phaser.GameObjects.Container {
     this.scene.scene.run(Scenes.GAMEOVER)
   }
 
-  protected jump () {
-    this.objectBody.setGravityY(0)
-    this.objectBody.setVelocityY(NumberSettings.GoUpVelocity)
-    this.objectBody.setGravityY(NumberSettings.GravityY)
+  jump () {
+    // this.objectBody.setGravityY(0)
+    this.objectBody.setVelocityY(this.jumpVelocity)
+    // this.objectBody.setGravityY(NumberSettings.GravityY)
   }
 }

@@ -2,7 +2,10 @@ import Phaser from 'phaser'
 import Texture from '@/constants/texture'
 import Scenes from '@/constants/scenes'
 import Doge from '@/game/Doge'
+import NormalGameObject from '@/game/NormalGameObject'
 import NumberSettings from '@/constants/number-settings'
+import DogeProperty from '@/constants/doge-property'
+import LootBox from '@/game/LootBox'
 
 export default class Game extends Phaser.Scene {
   protected doge!: Doge
@@ -11,11 +14,17 @@ export default class Game extends Phaser.Scene {
   protected midBackground!: Phaser.GameObjects.TileSprite
   protected foreBackground!: Phaser.GameObjects.TileSprite
 
-  protected allObstacles: Array<Phaser.GameObjects.Image> = []
+  protected allObstacles: Array<NormalGameObject> = []
   protected nextObstaclePosition = NumberSettings.ObstacleInterval
 
-  protected nextLootBox = NumberSettings.LootBoxInterval - 1
-  protected lootBox: Array<Phaser.GameObjects.Image> = []
+  protected nextLootBoxPositionX = 0
+  protected nextLootBox = NumberSettings.LootBoxInterval
+  protected lootBox: Record<string, LootBox | null> = {
+    upper: null,
+    lower: null
+  }
+
+  private overlapped = false
 
   constructor () {
     super(Scenes.GAME)
@@ -23,17 +32,18 @@ export default class Game extends Phaser.Scene {
 
   public create () {
     const { width, height } = this.scale
-    const rightEdge = width - NumberSettings.CameraOffsetX
 
     this.setBackground()
     this.setBorder()
-
-    this.allObstacles.push(this.add.image(rightEdge - NumberSettings.ObstacleInterval, height - 30, Texture.Object.Obstacle).setOrigin(0.5, 1))
 
     this.physics.world.setBounds(0, NumberSettings.BorderHeight, Number.MAX_SAFE_INTEGER, height - NumberSettings.BorderHeight * 2)
 
     this.doge = new Doge(this, width * 0.5, height * 0.3)
     this.add.existing(this.doge)
+
+    this.setObstacle(width - NumberSettings.CameraOffsetX - NumberSettings.ObstacleInterval, height - (64 + 30))
+
+    this.setLootBox(NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2)
 
     this.setCamera()
   }
@@ -82,16 +92,20 @@ export default class Game extends Phaser.Scene {
 
     /**
      * 在右边界和最后一个障碍物的距离大于设定值时，添加下一个障碍物
+     * 障碍物的个数达到一定数量时，添加 loot box
      */
     if (!this.nextLootBox) {
-      const lootBoxUpper = this.add.image(rightEdge + NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2, height * 0.4, Texture.Charactor.Husky).setOrigin(0, 1)
-      const lootBoxLower = this.add.image(rightEdge + NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2, height * 0.8, Texture.Charactor.Husky).setOrigin(0, 1)
+      // this.lootBox.upper = this.add.image(rightEdge + NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2, height * 0.4, Texture.Charactor.Husky).setOrigin(0, 1)
+      // this.lootBox.lower = this.add.image(rightEdge + NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2, height * 0.8, Texture.Charactor.Husky).setOrigin(0, 1)
+
+      // this.setLootBox(rightEdge + NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2)
+      this.nextLootBoxPositionX = rightEdge + NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2
 
       this.nextLootBox = NumberSettings.LootBoxInterval
       this.nextObstaclePosition = NumberSettings.DistanceBetweenObstacleAndLootBox
     } else if (rightEdge - lastObstacle.x - NumberSettings.CameraOffsetX > this.nextObstaclePosition) {
       // 添加新的障碍物
-      this.setObstacle(rightEdge, height)
+      this.setObstacle(rightEdge + 10 - NumberSettings.CameraOffsetX, height - (64 + 30))
       this.nextObstaclePosition = NumberSettings.ObstacleInterval
 
       // 干掉没有用的障碍物
@@ -105,14 +119,54 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  private clearObstacle (obstacle: Phaser.GameObjects.Image) {
+  protected clearObstacle (obstacle: NormalGameObject) {
     const index = this.allObstacles.indexOf(obstacle)
     this.allObstacles.splice(index, 1)
     obstacle.destroy()
   }
 
-  private setObstacle (rightEdge: number, height: number) {
-    const newObstacle = this.add.image(rightEdge + 10 - NumberSettings.CameraOffsetX, height - 30, Texture.Object.Obstacle).setOrigin(0, 1)
+  protected setObstacle (x: number, y: number) {
+    const newObstacle = new NormalGameObject(this, x, y, Texture.Object.Obstacle)
+    this.add.existing(newObstacle)
+    this.physics.add.overlap(newObstacle, this.doge, this.handleOverlap.bind(this), undefined, this)
     this.allObstacles.push(newObstacle)
+  }
+
+  protected handleOverlap (object1: Phaser.GameObjects.GameObject, object2: Phaser.GameObjects.GameObject) {
+    if ((object2 as Doge).objectState === DogeProperty.State.Dead) return
+
+    switch ((object1 as NormalGameObject).texture) {
+      case Texture.Object.Obstacle:
+        this.doge.dead()
+        break
+      case Texture.Charactor.Husky:
+        this.doge.buff = this.buffLoot()
+
+        this.lootBox.upper?.handleOverlapped(this.nextLootBoxPositionX, NumberSettings.UpperLootBoxPosition)
+        this.lootBox.lower?.handleOverlapped(this.nextLootBoxPositionX, NumberSettings.LowerLootBoxPosition)
+        break
+      default:
+        break
+    }
+  }
+
+  protected buffLoot (): DogeProperty.Buff {
+    return DogeProperty.Buff.INVINCIBLE
+  }
+
+  protected setLootBox (x: number) {
+    if (this.lootBox.upper) {
+      this.lootBox.lower?.setPosition(x, NumberSettings.LowerLootBoxPosition)
+      this.lootBox.upper?.setPosition(x, NumberSettings.UpperLootBoxPosition)
+    } else {
+      this.lootBox.upper = new LootBox(this, x, NumberSettings.UpperLootBoxPosition)
+      this.lootBox.lower = new LootBox(this, x, NumberSettings.LowerLootBoxPosition)
+
+      this.add.existing(this.lootBox.upper)
+      this.add.existing(this.lootBox.lower)
+
+      this.physics.add.overlap(this.lootBox.upper, this.doge, this.handleOverlap.bind(this), undefined, this)
+      this.physics.add.overlap(this.lootBox.lower, this.doge, this.handleOverlap.bind(this), undefined, this)
+    }
   }
 }

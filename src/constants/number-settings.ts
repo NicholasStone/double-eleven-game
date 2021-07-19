@@ -2,8 +2,8 @@ namespace NumberSettings {
   /**
    * 画布大小
    */
-  export const Width = 1000
-  export const Height = 560
+  export const Width = 1024
+  export const Height = 576
 
   /**
    * 摄像机偏移量
@@ -19,7 +19,7 @@ namespace NumberSettings {
    * 重力
    * 横向重力用于横向加速
    */
-  export const GravityY = Height * 2
+  export const GravityY = 1200
   export const GravityX = 1
 
   /**
@@ -33,8 +33,18 @@ namespace NumberSettings {
    * @LootBoxInterval {number} 宝箱间隔（每n个障碍物）
    */
   export const ObstacleInterval = 160
-  export const LootBoxInterval = 7
+  export const LootBoxInterval = 1
   export const DistanceBetweenObstacleAndLootBox = Width * 0.7
+  export const UpperLootBoxPosition = Height * 0.25
+  export const LowerLootBoxPosition = Height * 0.65
+
+  /**
+   * buff 数值设定
+   */
+  export const LessGravityDiff = 1
+  export const MoreGravityDiff = 1
+  export const LessUpperVelocity = GravityY * -0.1
+  export const MoreUpperVelocity = GravityY * 0.1
 }
 
 export default NumberSettings
