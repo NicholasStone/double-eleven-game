@@ -8,7 +8,7 @@ import Scenes from '@/constants/scenes'
 export default class Doge extends Phaser.GameObjects.Container {
   private _objectState: DogeProperty.State = DogeProperty.State.Forward
   private _buff: DogeProperty.Buff = DogeProperty.Buff.NONE
-  private _objectGravityY = NumberSettings.GravityY
+  private _objectGravityY = 0
 
   protected object!: Phaser.GameObjects.Image
   objectBody!: Phaser.Physics.Arcade.Body
@@ -102,8 +102,6 @@ export default class Doge extends Phaser.GameObjects.Container {
   }
 
   jump () {
-    // this.objectBody.setGravityY(0)
     this.objectBody.setVelocityY(this.jumpVelocity)
-    // this.objectBody.setGravityY(NumberSettings.GravityY)
   }
 }

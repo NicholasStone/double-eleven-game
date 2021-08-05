@@ -17,6 +17,9 @@ export default class Preloader extends Phaser.Scene {
     this.load.image(Texture.Object.Obstacle, 'assets/object/iceberg.png')
     this.load.atlas(Texture.Object.IceBlock, 'assets/block/block-ground.png', 'assets/block/block-ground.json')
 
+    this.load.image(Texture.Object.TubeLong, 'assets/object/tube-1.png')
+    this.load.image(Texture.Object.TubeShort, 'assets/object/tube-2.png')
+
     this.load.image(Texture.Charactor.Husky, 'assets/characters/husky.png')
     this.load.image(Texture.Charactor.Samoyed, 'assets/characters/samoyed.png')
     this.load.image(Texture.Charactor.Akita, 'assets/characters/akita.png')

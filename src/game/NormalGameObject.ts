@@ -1,13 +1,14 @@
 import Phaser from 'phaser'
 import Texture from '@/constants/texture'
 
-export default class NormalGameObject extends Phaser.GameObjects.Container {
+export default
+abstract class NormalGameObject extends Phaser.GameObjects.Container {
   public texture: Texture.Object | Texture.Charactor
 
   protected object: Phaser.GameObjects.Image
   objectBody: Phaser.Physics.Arcade.Body
 
-  constructor (scene: Phaser.Scene, x: number, y: number, texture: Texture.Charactor | Texture.Object) {
+  protected constructor (scene: Phaser.Scene, x: number, y: number, texture: Texture.Charactor | Texture.Object) {
     super(scene, x, y)
     this.texture = texture
 
@@ -19,7 +20,6 @@ export default class NormalGameObject extends Phaser.GameObjects.Container {
     const { width, height } = this.object
     this.objectBody = this.body as Phaser.Physics.Arcade.Body
     this.objectBody.setSize(width, height)
-    // this.objectBody.setOffset(width * 0.5, height * 0.5)
   }
 
   preUpdate () {

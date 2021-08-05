@@ -3,25 +3,20 @@ import Texture from '@/constants/texture'
 import NormalGameObject from '@/game/NormalGameObject'
 
 export default class LootBox extends NormalGameObject {
+  private animePlay: number = -1
+
   constructor (scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, Texture.Charactor.Husky)
-
-    this.object = scene.add.image(0, 0, Texture.Charactor.Husky).setOrigin(0, 0)
-    this.add(this.object)
-
-    scene.physics.add.existing(this)
-
-    const { width, height } = this.object
-    this.objectBody = this.body as Phaser.Physics.Arcade.Body
-    this.objectBody.setSize(width, height)
   }
 
-  handleOverlapped (nextPositionX?: number, nextPositionY?: number) {
-    console.log('overlapped')
-    this.objectBody.setEnable(false)
-    setTimeout(() => {
-      this.setPosition(nextPositionX, nextPositionY)
-      this.objectBody.setEnable(true)
-    }, 500)
+  handleOverlapped () {
+    if (this.animePlay < 0) {
+      console.log('start anime')
+      this.objectBody.setEnable(false)
+      this.animePlay = window.setTimeout(() => {
+        this.objectBody.setEnable(true)
+        this.animePlay = -1
+      }, 5000)
+    }
   }
 }

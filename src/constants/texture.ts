@@ -12,7 +12,9 @@ namespace Texture {
   export enum Object {
     Igloo = 'Igloo',
     Obstacle = 'iceberg',
-    IceBlock = 'ice-block'
+    IceBlock = 'ice-block',
+    TubeLong = 'tube-1',
+    TubeShort = 'tube-2'
   }
 
   export enum Charactor {

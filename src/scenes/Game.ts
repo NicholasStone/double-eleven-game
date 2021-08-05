@@ -6,6 +6,8 @@ import NormalGameObject from '@/game/NormalGameObject'
 import NumberSettings from '@/constants/number-settings'
 import DogeProperty from '@/constants/doge-property'
 import LootBox from '@/game/LootBox'
+import ObstaclePair from '@/game/ObstaclePair'
+import Obstacle from '@/constants/obstacle-settings'
 
 export default class Game extends Phaser.Scene {
   protected doge!: Doge
@@ -14,11 +16,11 @@ export default class Game extends Phaser.Scene {
   protected midBackground!: Phaser.GameObjects.TileSprite
   protected foreBackground!: Phaser.GameObjects.TileSprite
 
-  protected allObstacles: Array<NormalGameObject> = []
+  protected allObstacles: Array<ObstaclePair> = []
   protected nextObstaclePosition = NumberSettings.ObstacleInterval
 
   protected nextLootBoxPositionX = 0
-  protected nextLootBox = NumberSettings.LootBoxInterval
+  protected obstacleBeforeLootBox = NumberSettings.LootBoxInterval
   protected lootBox: Record<string, LootBox | null> = {
     upper: null,
     lower: null
@@ -43,7 +45,7 @@ export default class Game extends Phaser.Scene {
 
     this.setObstacle(width - NumberSettings.CameraOffsetX - NumberSettings.ObstacleInterval, height - (64 + 30))
 
-    this.setLootBox(NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2)
+    // this.setLootBox(NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2)
 
     this.setCamera()
   }
@@ -94,14 +96,13 @@ export default class Game extends Phaser.Scene {
      * 在右边界和最后一个障碍物的距离大于设定值时，添加下一个障碍物
      * 障碍物的个数达到一定数量时，添加 loot box
      */
-    if (!this.nextLootBox) {
-      // this.lootBox.upper = this.add.image(rightEdge + NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2, height * 0.4, Texture.Charactor.Husky).setOrigin(0, 1)
-      // this.lootBox.lower = this.add.image(rightEdge + NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2, height * 0.8, Texture.Charactor.Husky).setOrigin(0, 1)
-
-      // this.setLootBox(rightEdge + NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2)
+    if (!this.obstacleBeforeLootBox) {
       this.nextLootBoxPositionX = rightEdge + NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2
+      console.log('next loot box position', this.nextLootBoxPositionX)
 
-      this.nextLootBox = NumberSettings.LootBoxInterval
+      this.setLootBox(this.nextLootBoxPositionX)
+
+      this.obstacleBeforeLootBox = NumberSettings.LootBoxInterval
       this.nextObstaclePosition = NumberSettings.DistanceBetweenObstacleAndLootBox
     } else if (rightEdge - lastObstacle.x - NumberSettings.CameraOffsetX > this.nextObstaclePosition) {
       // 添加新的障碍物
@@ -115,18 +116,19 @@ export default class Game extends Phaser.Scene {
         }
       }
 
-      this.nextLootBox--
+      this.obstacleBeforeLootBox--
+      console.log('obstacle before loot box', this.obstacleBeforeLootBox)
     }
   }
 
-  protected clearObstacle (obstacle: NormalGameObject) {
+  protected clearObstacle (obstacle: ObstaclePair) {
     const index = this.allObstacles.indexOf(obstacle)
     this.allObstacles.splice(index, 1)
     obstacle.destroy()
   }
 
   protected setObstacle (x: number, y: number) {
-    const newObstacle = new NormalGameObject(this, x, y, Texture.Object.Obstacle)
+    const newObstacle = new ObstaclePair(this, x, y, Obstacle.Modality.TowShort)
     this.add.existing(newObstacle)
     this.physics.add.overlap(newObstacle, this.doge, this.handleOverlap.bind(this), undefined, this)
     this.allObstacles.push(newObstacle)
@@ -142,8 +144,8 @@ export default class Game extends Phaser.Scene {
       case Texture.Charactor.Husky:
         this.doge.buff = this.buffLoot()
 
-        this.lootBox.upper?.handleOverlapped(this.nextLootBoxPositionX, NumberSettings.UpperLootBoxPosition)
-        this.lootBox.lower?.handleOverlapped(this.nextLootBoxPositionX, NumberSettings.LowerLootBoxPosition)
+        this.lootBox.upper?.handleOverlapped()
+        this.lootBox.lower?.handleOverlapped()
         break
       default:
         break
@@ -156,9 +158,11 @@ export default class Game extends Phaser.Scene {
 
   protected setLootBox (x: number) {
     if (this.lootBox.upper) {
+      console.log('has loot box')
       this.lootBox.lower?.setPosition(x, NumberSettings.LowerLootBoxPosition)
       this.lootBox.upper?.setPosition(x, NumberSettings.UpperLootBoxPosition)
     } else {
+      console.log('new box')
       this.lootBox.upper = new LootBox(this, x, NumberSettings.UpperLootBoxPosition)
       this.lootBox.lower = new LootBox(this, x, NumberSettings.LowerLootBoxPosition)
 
