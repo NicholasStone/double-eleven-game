@@ -6,8 +6,16 @@ import NormalGameObject from '@/game/NormalGameObject'
 import NumberSettings from '@/constants/number-settings'
 import DogeProperty from '@/constants/doge-property'
 import LootBox from '@/game/LootBox'
-import ObstaclePair from '@/game/ObstaclePair'
-import Obstacle from '@/constants/obstacle-settings'
+import Tube from '@/game/Tube'
+import ObstacleSettings from '@/constants/obstacle-settings'
+import { getRandomInArray } from '@/shared/random'
+import ScoreBoard from '@/game/ScoreBoard'
+
+export type TubePair = {
+  upper: Tube,
+  lower: Tube,
+  modality: ObstacleSettings.Modality
+}
 
 export default class Game extends Phaser.Scene {
   protected doge!: Doge
@@ -16,7 +24,8 @@ export default class Game extends Phaser.Scene {
   protected midBackground!: Phaser.GameObjects.TileSprite
   protected foreBackground!: Phaser.GameObjects.TileSprite
 
-  protected allObstacles: Array<ObstaclePair> = []
+  protected allObstacles: Array<TubePair> = []
+
   protected nextObstaclePosition = NumberSettings.ObstacleInterval
 
   protected nextLootBoxPositionX = 0
@@ -26,7 +35,7 @@ export default class Game extends Phaser.Scene {
     lower: null
   }
 
-  private overlapped = false
+  protected scoreBoard!: ScoreBoard
 
   constructor () {
     super(Scenes.GAME)
@@ -43,10 +52,11 @@ export default class Game extends Phaser.Scene {
     this.doge = new Doge(this, width * 0.5, height * 0.3)
     this.add.existing(this.doge)
 
-    this.setObstacle(width - NumberSettings.CameraOffsetX - NumberSettings.ObstacleInterval, height - (64 + 30))
+    this.setObstacle(width - NumberSettings.CameraOffsetX - NumberSettings.ObstacleInterval)
 
     // this.setLootBox(NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2)
 
+    this.setScoreBoard()
     this.setCamera()
   }
 
@@ -57,7 +67,8 @@ export default class Game extends Phaser.Scene {
 
   protected setCamera () {
     const { height } = this.scale
-    this.cameras.main.startFollow(this.doge, false, 1, 1, NumberSettings.CameraOffsetX)
+    this.cameras.main.startFollow(this.doge, false, 1, 1)
+    this.cameras.main.followOffset.set(NumberSettings.CameraOffsetX, 0)
     this.cameras.main.setBounds(0, 0, Number.MAX_SAFE_INTEGER, height)
   }
 
@@ -85,7 +96,6 @@ export default class Game extends Phaser.Scene {
   protected wrapObstacleAndLootBox () {
     if (this.scene.isActive(Scenes.GAMEOVER)) return
 
-    const { height } = this.scale
     const { scrollX } = this.cameras.main
     const leftEdge = scrollX + NumberSettings.CameraOffsetX
     const rightEdge = scrollX + NumberSettings.CameraOffsetX + this.scale.width
@@ -98,47 +108,85 @@ export default class Game extends Phaser.Scene {
      */
     if (!this.obstacleBeforeLootBox) {
       this.nextLootBoxPositionX = rightEdge + NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2
-      console.log('next loot box position', this.nextLootBoxPositionX)
+      // console.log('next loot box position', this.nextLootBoxPositionX)
 
       this.setLootBox(this.nextLootBoxPositionX)
 
       this.obstacleBeforeLootBox = NumberSettings.LootBoxInterval
       this.nextObstaclePosition = NumberSettings.DistanceBetweenObstacleAndLootBox
-    } else if (rightEdge - lastObstacle.x - NumberSettings.CameraOffsetX > this.nextObstaclePosition) {
+    } else if (rightEdge - lastObstacle.upper.x - NumberSettings.CameraOffsetX > this.nextObstaclePosition) {
       // 添加新的障碍物
-      this.setObstacle(rightEdge + 10 - NumberSettings.CameraOffsetX, height - (64 + 30))
+      this.setObstacle(rightEdge + 10 - NumberSettings.CameraOffsetX)
       this.nextObstaclePosition = NumberSettings.ObstacleInterval
 
       // 干掉没有用的障碍物
       for (const obstacle of this.allObstacles) {
-        if (obstacle.x - obstacle.width - 20 < leftEdge) {
+        if (obstacle.upper.x - obstacle.upper.width - 20 < leftEdge) {
           this.clearObstacle(obstacle)
         }
       }
 
       this.obstacleBeforeLootBox--
-      console.log('obstacle before loot box', this.obstacleBeforeLootBox)
+      // console.log('obstacle before loot box', this.obstacleBeforeLootBox)
     }
   }
 
-  protected clearObstacle (obstacle: ObstaclePair) {
+  protected clearObstacle (obstacle: TubePair) {
     const index = this.allObstacles.indexOf(obstacle)
     this.allObstacles.splice(index, 1)
-    obstacle.destroy()
+    obstacle.lower.destroy()
+    obstacle.upper.destroy()
   }
 
-  protected setObstacle (x: number, y: number) {
-    const newObstacle = new ObstaclePair(this, x, y, Obstacle.Modality.TowShort)
-    this.add.existing(newObstacle)
-    this.physics.add.overlap(newObstacle, this.doge, this.handleOverlap.bind(this), undefined, this)
-    this.allObstacles.push(newObstacle)
+  protected setObstacle (x: number) {
+    const obstaclePairs = Object.values(ObstacleSettings.Modality).filter(item => typeof item === 'number')
+    const modality = getRandomInArray(obstaclePairs) as ObstacleSettings.Modality
+
+    const obstaclePair = this.tubePairFactory(modality, x)
+
+    this.add.existing(obstaclePair.upper)
+    this.add.existing(obstaclePair.lower)
+    this.physics.add.overlap(obstaclePair.upper, this.doge, this.handleOverlap.bind(this), undefined, this)
+    this.physics.add.overlap(obstaclePair.lower, this.doge, this.handleOverlap.bind(this), undefined, this)
+    this.allObstacles.push(obstaclePair)
+  }
+
+  protected tubePairFactory (modality: ObstacleSettings.Modality, x: number): TubePair {
+    const { height } = this.scale
+
+    let upper: Tube
+    let lower: Tube
+    switch (modality) {
+      case ObstacleSettings.Modality.TowShort:
+        upper = new Tube(this, x, 0, Texture.Object.TubeShort)
+        lower = new Tube(this, x, height - ObstacleSettings.ObstacleHeight.Short, Texture.Object.TubeShort)
+        break
+      case ObstacleSettings.Modality.ShortDown:
+        upper = new Tube(this, x, 0, Texture.Object.TubeLong)
+        lower = new Tube(this, x, height - ObstacleSettings.ObstacleHeight.Short, Texture.Object.TubeShort)
+        break
+      case ObstacleSettings.Modality.ShortUp:
+        upper = new Tube(this, x, 0, Texture.Object.TubeShort)
+        lower = new Tube(this, x, height - ObstacleSettings.ObstacleHeight.Long, Texture.Object.TubeLong)
+        break
+      case ObstacleSettings.Modality.TowLong:
+      default:
+        upper = new Tube(this, x, 0, Texture.Object.TubeLong)
+        lower = new Tube(this, x, height - ObstacleSettings.ObstacleHeight.Long, Texture.Object.TubeLong)
+        break
+    }
+
+    return {
+      upper, lower, modality
+    }
   }
 
   protected handleOverlap (object1: Phaser.GameObjects.GameObject, object2: Phaser.GameObjects.GameObject) {
     if ((object2 as Doge).objectState === DogeProperty.State.Dead) return
 
     switch ((object1 as NormalGameObject).texture) {
-      case Texture.Object.Obstacle:
+      case Texture.Object.TubeShort:
+      case Texture.Object.TubeLong:
         this.doge.dead()
         break
       case Texture.Charactor.Husky:
@@ -153,16 +201,19 @@ export default class Game extends Phaser.Scene {
   }
 
   protected buffLoot (): DogeProperty.Buff {
-    return DogeProperty.Buff.INVINCIBLE
+    const buffArray = Object.values(DogeProperty.Buff).filter(item => typeof item === 'number')
+    // console.log(buffArray)
+    return getRandomInArray(buffArray) as DogeProperty.Buff
+    // return DogeProperty.Buff.LESS_GRAVITY
   }
 
   protected setLootBox (x: number) {
     if (this.lootBox.upper) {
-      console.log('has loot box')
+      // console.log('has loot box')
       this.lootBox.lower?.setPosition(x, NumberSettings.LowerLootBoxPosition)
       this.lootBox.upper?.setPosition(x, NumberSettings.UpperLootBoxPosition)
     } else {
-      console.log('new box')
+      // console.log('new box')
       this.lootBox.upper = new LootBox(this, x, NumberSettings.UpperLootBoxPosition)
       this.lootBox.lower = new LootBox(this, x, NumberSettings.LowerLootBoxPosition)
 
@@ -172,5 +223,10 @@ export default class Game extends Phaser.Scene {
       this.physics.add.overlap(this.lootBox.upper, this.doge, this.handleOverlap.bind(this), undefined, this)
       this.physics.add.overlap(this.lootBox.lower, this.doge, this.handleOverlap.bind(this), undefined, this)
     }
+  }
+
+  protected setScoreBoard () {
+    this.scoreBoard = new ScoreBoard(this.scene.scene, 500, 5)
+    this.add.existing(this.scoreBoard)
   }
 }

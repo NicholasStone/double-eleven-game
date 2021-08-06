@@ -7,6 +7,7 @@ export default class LootBox extends NormalGameObject {
 
   constructor (scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, Texture.Charactor.Husky)
+    this.addBody()
   }
 
   handleOverlapped () {

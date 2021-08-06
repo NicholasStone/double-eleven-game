@@ -29,6 +29,7 @@ export default class Doge extends Phaser.GameObjects.Container {
   }
 
   set buff (value: DogeProperty.Buff) {
+    console.log('buff ', value)
     this._buff = value
 
     switch (value) {
@@ -88,6 +89,11 @@ export default class Doge extends Phaser.GameObjects.Container {
         break
     }
   }
+
+  // protected showData () {
+  //   this.setDataEnabled()
+  //   this.data.set('buff', this.buff)
+  // }
 
   dead () {
     if (this.buff === DogeProperty.Buff.INVINCIBLE) return
