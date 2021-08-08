@@ -16,6 +16,7 @@ const config: Phaser.Types.Core.GameConfig = {
       debug: true
     }
   },
+  parent: 'app',
   scene: [Preloader, Ready, Game, GameOver]
 }
 

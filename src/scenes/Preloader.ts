@@ -4,11 +4,11 @@ import Scenes from '@/constants/scenes'
 // import Animates from '@/constants/animates'
 
 export default class Preloader extends Phaser.Scene {
-  constructor () {
+  constructor() {
     super(Scenes.PRELOADER)
   }
 
-  public preload () {
+  public preload() {
     this.loadBackground()
 
     this.load.image(Texture.Image.Wasted, 'assets/images/wasted.png')
@@ -23,15 +23,13 @@ export default class Preloader extends Phaser.Scene {
     this.load.image(Texture.Charactor.Husky, 'assets/characters/husky.png')
     this.load.image(Texture.Charactor.Samoyed, 'assets/characters/samoyed.png')
     this.load.image(Texture.Charactor.Akita, 'assets/characters/akita.png')
-
-    this.load.html(Texture.HTML.ScoreBoard, 'assets/html/score-board.html')
   }
 
-  public create () {
+  public create() {
     this.scene.start(Scenes.READY)
   }
 
-  protected loadBackground () {
+  protected loadBackground() {
     this.load.image(Texture.Background.Midground, 'assets/background/bg_midground.png')
     this.load.image(Texture.Background.Foreground, 'assets/background/bg_foreground.png')
     this.load.image(Texture.Background.Sky, 'assets/background/bg_sky.png')

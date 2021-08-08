@@ -39,7 +39,7 @@ module.exports = {
     },
     proxy: {
       '/assets': {
-        target: 'http://localhost/11-game',
+        target: 'http://localhost/',
         pathRewrite: {
           '^/assets': ''
         }
