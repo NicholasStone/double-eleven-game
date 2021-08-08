@@ -226,7 +226,7 @@ export default class Game extends Phaser.Scene {
   }
 
   protected setScoreBoard () {
-    this.scoreBoard = new ScoreBoard(this.scene.scene, 500, 5)
+    this.scoreBoard = new ScoreBoard(this.scene.scene, 500, 15)
     this.add.existing(this.scoreBoard)
   }
 }

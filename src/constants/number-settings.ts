@@ -13,7 +13,7 @@ namespace NumberSettings {
   /**
    * 上下边界高度
    */
-  export const BorderHeight = 30
+  export const BorderHeight = 10
 
   /**
    * 重力

@@ -22,6 +22,10 @@ namespace Texture {
     Samoyed = 'samoyed',
     Akita = 'akita'
   }
+
+  export enum HTML {
+    ScoreBoard = 'score-board'
+  }
 }
 
 export default Texture

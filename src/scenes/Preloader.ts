@@ -23,6 +23,8 @@ export default class Preloader extends Phaser.Scene {
     this.load.image(Texture.Charactor.Husky, 'assets/characters/husky.png')
     this.load.image(Texture.Charactor.Samoyed, 'assets/characters/samoyed.png')
     this.load.image(Texture.Charactor.Akita, 'assets/characters/akita.png')
+
+    this.load.html(Texture.HTML.ScoreBoard, 'assets/html/score-board.html')
   }
 
   public create () {

@@ -21,7 +21,7 @@ module.exports = {
     path: DIST_DIR
   },
   externals: {
-    phaser: 'Phaser',
+    phaser: 'Phaser'
   },
   devServer: {
     inline: true,
@@ -30,6 +30,7 @@ module.exports = {
     contentBase: DIST_DIR,
     overlay: true,
     port: 7000,
+    host: '0.0.0.0',
     watchOptions: {
       ignored: [
         DIST_DIR,
@@ -42,7 +43,7 @@ module.exports = {
         pathRewrite: {
           '^/assets': ''
         }
-      },
+      }
     }
   },
   optimization: {
@@ -84,16 +85,16 @@ module.exports = {
         use: [
           { loader: 'style-loader' },
           { loader: 'css-loader' }
-        ],
+        ]
       },
       {
         test: /\.(svg|otf|ttf|woff2?|eot|gif|png|jpe?g)(\?\S*)?$/,
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: path.posix.join('static', '[name].[hash:7].[ext]'),
+          name: path.posix.join('static', '[name].[hash:7].[ext]')
         }
-      },
+      }
     ]
   },
   plugins: [
