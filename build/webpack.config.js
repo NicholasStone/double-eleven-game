@@ -4,11 +4,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CompressPlugin = require('compression-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const isProd = process.env.NODE_ENV === 'production'
 
 const SOURCE_DIR = path.resolve(__dirname, '../src')
 const DIST_DIR = path.resolve(__dirname, '../dist')
+const PUBLIC_DIR = path.resolve(__dirname, '../public')
 
 module.exports = {
   mode: isProd ? 'production' : 'development',
@@ -113,6 +115,11 @@ module.exports = {
       threshold: 10000,
       deleteOriginalAssets: false,
       minRatio: 0.8
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: PUBLIC_DIR, to: DIST_DIR + '/assets' }
+      ]
     })
   ]
 }
