@@ -1,60 +1,35 @@
 import Phaser from 'phaser'
 import Texture from '@/constants/texture'
 import Scenes from '@/constants/scenes'
-import Animates from '@/constants/animates'
+// import Animates from '@/constants/animates'
 
 export default class Preloader extends Phaser.Scene {
-  constructor () {
+  constructor() {
     super(Scenes.PRELOADER)
   }
 
-  public preload () {
+  public preload() {
     this.loadBackground()
 
+    this.load.image(Texture.Image.Wasted, 'assets/images/wasted.png')
+
     this.load.image(Texture.Object.Igloo, 'assets/object/igloo.png')
+    this.load.image(Texture.Object.Obstacle, 'assets/object/iceberg.png')
+    this.load.atlas(Texture.Object.IceBlock, 'assets/block/block-ground.png', 'assets/block/block-ground.json')
 
-    this.load.atlas(Texture.NinjaCat.Walk,
-      'assets/characters/ninja-cat-walk.png',
-      'assets/characters/ninja-cat-walk.json'
-    )
+    this.load.image(Texture.Object.TubeLong, 'assets/object/tube-1.png')
+    this.load.image(Texture.Object.TubeShort, 'assets/object/tube-2.png')
 
-    this.load.atlas(Texture.NinjaCat.Jump,
-      'assets/characters/ninja-cat-jump.png',
-      'assets/characters/ninja-cat-jump.json'
-    )
+    this.load.image(Texture.Charactor.Husky, 'assets/characters/husky.png')
+    this.load.image(Texture.Charactor.Samoyed, 'assets/characters/samoyed.png')
+    this.load.image(Texture.Charactor.Akita, 'assets/characters/akita.png')
   }
 
-  public create () {
-    this.anims.create({
-      key: Animates.NinjaCat.Walk,
-      frames: this.anims.generateFrameNames(Texture.NinjaCat.Walk, {
-        start: 1,
-        end: 8,
-        prefix: 'NinjaCat_walk_',
-        zeroPad: 2,
-        suffix: '.png'
-      }),
-      frameRate: 15,
-      repeat: -1
-    })
-
-    this.anims.create({
-      key: Animates.NinjaCat.Jump,
-      frames: this.anims.generateFrameNames(Texture.NinjaCat.Jump, {
-        start: 1,
-        end: 6,
-        prefix: 'NinjaCat_jump_',
-        zeroPad: 2,
-        suffix: '.png'
-      }),
-      frameRate: 15,
-      repeat: 0
-    })
-
-    this.scene.start(Scenes.GAME)
+  public create() {
+    this.scene.start(Scenes.READY)
   }
 
-  protected loadBackground () {
+  protected loadBackground() {
     this.load.image(Texture.Background.Midground, 'assets/background/bg_midground.png')
     this.load.image(Texture.Background.Foreground, 'assets/background/bg_foreground.png')
     this.load.image(Texture.Background.Sky, 'assets/background/bg_sky.png')

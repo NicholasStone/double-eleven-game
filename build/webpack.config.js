@@ -4,11 +4,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CompressPlugin = require('compression-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const isProd = process.env.NODE_ENV === 'production'
 
 const SOURCE_DIR = path.resolve(__dirname, '../src')
 const DIST_DIR = path.resolve(__dirname, '../dist')
+const PUBLIC_DIR = path.resolve(__dirname, '../public')
 
 module.exports = {
   mode: isProd ? 'production' : 'development',
@@ -21,7 +23,7 @@ module.exports = {
     path: DIST_DIR
   },
   externals: {
-    phaser: 'Phaser',
+    phaser: 'Phaser'
   },
   devServer: {
     inline: true,
@@ -30,6 +32,7 @@ module.exports = {
     contentBase: DIST_DIR,
     overlay: true,
     port: 7000,
+    host: '0.0.0.0',
     watchOptions: {
       ignored: [
         DIST_DIR,
@@ -42,7 +45,7 @@ module.exports = {
         pathRewrite: {
           '^/assets': ''
         }
-      },
+      }
     }
   },
   optimization: {
@@ -84,16 +87,16 @@ module.exports = {
         use: [
           { loader: 'style-loader' },
           { loader: 'css-loader' }
-        ],
+        ]
       },
       {
         test: /\.(svg|otf|ttf|woff2?|eot|gif|png|jpe?g)(\?\S*)?$/,
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: path.posix.join('static', '[name].[hash:7].[ext]'),
+          name: path.posix.join('static', '[name].[hash:7].[ext]')
         }
-      },
+      }
     ]
   },
   plugins: [
@@ -112,6 +115,11 @@ module.exports = {
       threshold: 10000,
       deleteOriginalAssets: false,
       minRatio: 0.8
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: PUBLIC_DIR, to: DIST_DIR + '/assets' }
+      ]
     })
   ]
 }

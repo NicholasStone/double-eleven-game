@@ -1,7 +1,8 @@
 namespace Animates {
   export enum NinjaCat {
     Walk = 'walk',
-    Jump = 'jump'
+    Jump = 'jump',
+    Fall = 'fall'
   }
 }
 

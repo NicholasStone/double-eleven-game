@@ -2,3 +2,6 @@ node_modules
 .idea/
 .vsocde/
 texture/
+.DS_Store
+.dist/
+

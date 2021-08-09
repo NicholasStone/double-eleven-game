@@ -1,12 +1,31 @@
 html, body {
 	height: 100%;
 	width: 100%;
+	background-color: #333;
 	display: flex;
 	justify-content: center;
-	align-items: center;
+	align-items: flex-start;
 }
 
-/*canvas {*/
-/*	height: 100vh;*/
-/*	width: auto;*/
-/*}*/
+#app {
+	margin-top: 10px;
+	width: auto;
+	height: auto;
+}
+
+canvas {
+	max-width: 1024px;
+	width: 100%;
+	height: auto;
+}
+
+.score-board {
+	position: absolute;
+
+	width: 200px;
+	height: 100px;
+
+	font-size: 24px;
+
+	transition: all 20ms linear;
+}
