@@ -18,7 +18,7 @@ export type TubePair = {
 }
 
 export default class Game extends Phaser.Scene {
-  protected doge!: Doge
+  doge!: Doge
 
   protected sky!: Phaser.GameObjects.TileSprite
   protected midBackground!: Phaser.GameObjects.TileSprite
@@ -38,11 +38,11 @@ export default class Game extends Phaser.Scene {
   // protected scoreBoard!: Phaser.GameObjects.DOMElement
   protected scoreBoard!: ScoreBoard
 
-  constructor() {
+  constructor () {
     super(Scenes.GAME)
   }
 
-  public create() {
+  public create () {
     const { width, height } = this.scale
 
     this.setBackground()
@@ -61,26 +61,26 @@ export default class Game extends Phaser.Scene {
     this.setCamera()
   }
 
-  public update(time: number, delta: number) {
+  public update (time: number, delta: number) {
     this.moveBackground()
     this.wrapObstacleAndLootBox()
   }
 
-  protected setCamera() {
+  protected setCamera () {
     const { height } = this.scale
     this.cameras.main.startFollow(this.doge, false, 1, 1)
     this.cameras.main.followOffset.set(NumberSettings.CameraOffsetX, 0)
     this.cameras.main.setBounds(0, 0, Number.MAX_SAFE_INTEGER, height)
   }
 
-  protected setBorder() {
+  protected setBorder () {
     const { height } = this.scale
 
     this.add.rectangle(0, 0, Number.MAX_SAFE_INTEGER, NumberSettings.BorderHeight, 0x00ff00, 0.5).setOrigin(0, 0)
     this.add.rectangle(0, height - NumberSettings.BorderHeight, Number.MAX_SAFE_INTEGER, NumberSettings.BorderHeight, 0x00ff00, 0.5).setOrigin(0, 0)
   }
 
-  protected setBackground() {
+  protected setBackground () {
     const { width, height } = this.scale
 
     this.sky = this.add.tileSprite(0, 0, width, height, Texture.Background.Sky).setOrigin(0, 0).setScrollFactor(0, 0)
@@ -88,13 +88,13 @@ export default class Game extends Phaser.Scene {
     this.foreBackground = this.add.tileSprite(0, height - 88, width, height, Texture.Background.Foreground).setOrigin(0, 0).setScrollFactor(0, 0)
   }
 
-  protected moveBackground() {
+  protected moveBackground () {
     this.sky.setTilePosition(this.cameras.main.scrollX * 0.4)
     this.midBackground.setTilePosition(this.cameras.main.scrollX * 0.8)
     this.foreBackground.setTilePosition(this.cameras.main.scrollX * 1.2)
   }
 
-  protected wrapObstacleAndLootBox() {
+  protected wrapObstacleAndLootBox () {
     if (this.scene.isActive(Scenes.GAMEOVER)) return
 
     const { scrollX } = this.cameras.main
@@ -132,14 +132,14 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  protected clearObstacle(obstacle: TubePair) {
+  protected clearObstacle (obstacle: TubePair) {
     const index = this.allObstacles.indexOf(obstacle)
     this.allObstacles.splice(index, 1)
     obstacle.lower.destroy()
     obstacle.upper.destroy()
   }
 
-  protected setObstacle(x: number) {
+  protected setObstacle (x: number) {
     const obstaclePairs = Object.values(ObstacleSettings.Modality).filter(item => typeof item === 'number')
     const modality = getRandomInArray(obstaclePairs) as ObstacleSettings.Modality
 
@@ -152,7 +152,7 @@ export default class Game extends Phaser.Scene {
     this.allObstacles.push(obstaclePair)
   }
 
-  protected tubePairFactory(modality: ObstacleSettings.Modality, x: number): TubePair {
+  protected tubePairFactory (modality: ObstacleSettings.Modality, x: number): TubePair {
     const { height } = this.scale
 
     let upper: Tube
@@ -182,13 +182,13 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  protected handleOverlap(object1: Phaser.GameObjects.GameObject, object2: Phaser.GameObjects.GameObject) {
+  protected handleOverlap (object1: Phaser.GameObjects.GameObject, object2: Phaser.GameObjects.GameObject) {
     if ((object2 as Doge).objectState === DogeProperty.State.Dead) return
 
     switch ((object1 as NormalGameObject).texture) {
       case Texture.Object.TubeShort:
       case Texture.Object.TubeLong:
-        this.doge.dead()
+        this.doge.dead(object1 as Tube)
         break
       case Texture.Charactor.Husky:
         this.doge.buff = this.buffLoot()
@@ -201,14 +201,14 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  protected buffLoot(): DogeProperty.Buff {
+  protected buffLoot (): DogeProperty.Buff {
     const buffArray = Object.values(DogeProperty.Buff).filter(item => typeof item === 'number')
     // console.log(buffArray)
     return getRandomInArray(buffArray) as DogeProperty.Buff
     // return DogeProperty.Buff.LESS_GRAVITY
   }
 
-  protected setLootBox(x: number) {
+  protected setLootBox (x: number) {
     if (this.lootBox.upper) {
       // console.log('has loot box')
       this.lootBox.lower?.setPosition(x, NumberSettings.LowerLootBoxPosition)
@@ -226,7 +226,7 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  protected setScoreBoard() {
+  protected setScoreBoard () {
     this.scoreBoard = new ScoreBoard(this, 500, 15)
     this.scoreBoard.setPosition(0, 0)
     this.add.existing(this.scoreBoard)

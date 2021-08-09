@@ -8,4 +8,8 @@ export default class Tube extends NormalGameObject {
 
     this.addBody()
   }
+
+  handleImpact () {
+    this.objectBody.setGravityY(2000)
+  }
 }
