@@ -3,5 +3,5 @@ node_modules
 .vsocde/
 texture/
 .DS_Store
-.dist/
+dist/*
 
