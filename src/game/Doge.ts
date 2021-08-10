@@ -30,7 +30,6 @@ export default class Doge extends Phaser.GameObjects.Container {
   }
 
   set buff (value: DogeProperty.Buff) {
-    console.log('buff ', value)
     this._buff = value
 
     this.objectBody.setBounceY(0)
@@ -38,16 +37,16 @@ export default class Doge extends Phaser.GameObjects.Container {
 
     switch (value) {
       case DogeProperty.Buff.MOER_GRAVITY:
-        this.objectBody.setGravityY(NumberSettings.GravityY - NumberSettings.LessGravityDiff)
+        this.objectBody.setGravityY(NumberSettings.GravityY + NumberSettings.LessGravityDiff)
         break
       case DogeProperty.Buff.LESS_GRAVITY:
         this.objectBody.setGravityY(NumberSettings.GravityY + NumberSettings.MoreGravityDiff)
         break
       case DogeProperty.Buff.LESS_UPPER_VELOCITY:
-        this.jumpVelocity -= NumberSettings.GoUpVelocity - 200
+        this.jumpVelocity += NumberSettings.LessUpperVelocity
         break
       case DogeProperty.Buff.MORE_UPPER_VELOCITY:
-        this.jumpVelocity -= NumberSettings.GoUpVelocity + 200
+        this.jumpVelocity += NumberSettings.MoreUpperVelocity
         break
       case DogeProperty.Buff.INVINCIBLE:
         this.objectBody.setBounceY(1)

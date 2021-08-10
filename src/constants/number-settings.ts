@@ -24,6 +24,7 @@ namespace NumberSettings {
 
   /**
    * 每跳一次增加的速度
+   * (由于纵坐标是从左上角到左下角的，所以此值应为负值)
    */
   export const GoUpVelocity = Height * -0.8
 
@@ -33,7 +34,7 @@ namespace NumberSettings {
    * @LootBoxInterval {number} 宝箱间隔（每n个障碍物）
    */
   export const ObstacleInterval = 160
-  export const LootBoxInterval = 15
+  export const LootBoxInterval = 5
   export const DistanceBetweenObstacleAndLootBox = Width * 0.7
   export const UpperLootBoxPosition = Height * 0.25
   export const LowerLootBoxPosition = Height * 0.65
@@ -41,10 +42,10 @@ namespace NumberSettings {
   /**
    * buff 数值设定
    */
-  export const LessGravityDiff = 1
-  export const MoreGravityDiff = 1
-  export const LessUpperVelocity = GravityY * -0.1
-  export const MoreUpperVelocity = GravityY * 0.1
+  export const LessGravityDiff = GravityY * 0.2
+  export const MoreGravityDiff = GravityY * -0.2
+  export const LessUpperVelocity = Height * 0.1
+  export const MoreUpperVelocity = Height * -0.1
 }
 
 export default NumberSettings
