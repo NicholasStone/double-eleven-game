@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 import Texture from '@/constants/texture'
 import Scenes from '@/constants/scenes'
-import Doge from '@/game/Doge'
+import Player from '@/game/Player'
 import NormalGameObject from '@/game/NormalGameObject'
 import NumberSettings from '@/constants/number-settings'
 import DogeProperty from '@/constants/doge-property'
@@ -18,7 +18,8 @@ export type TubePair = {
 }
 
 export default class Game extends Phaser.Scene {
-  doge!: Doge
+  playerBehind!: Player
+  playerFront!: Player
 
   protected sky!: Phaser.GameObjects.TileSprite
   protected midBackground!: Phaser.GameObjects.TileSprite
@@ -32,6 +33,7 @@ export default class Game extends Phaser.Scene {
   protected obstacleBeforeLootBox = NumberSettings.LootBoxInterval
   protected lootBox: Record<string, LootBox | null> = {
     upper: null,
+    middle: null,
     lower: null
   }
 
@@ -47,16 +49,9 @@ export default class Game extends Phaser.Scene {
 
     this.setBackground()
     this.setBorder()
-
     this.physics.world.setBounds(0, NumberSettings.BorderHeight, Number.MAX_SAFE_INTEGER, height - NumberSettings.BorderHeight * 2)
-
-    this.doge = new Doge(this, width * 0.5, height * 0.3)
-    this.add.existing(this.doge)
-
+    this.setCharactersAndControls()
     this.setObstacle(width - NumberSettings.CameraOffsetX - NumberSettings.ObstacleInterval)
-
-    // this.setLootBox(NumberSettings.DistanceBetweenObstacleAndLootBox * 1.2)
-
     this.setScoreBoard()
     this.setCamera()
   }
@@ -66,9 +61,24 @@ export default class Game extends Phaser.Scene {
     this.wrapObstacleAndLootBox()
   }
 
+  protected setCharactersAndControls () {
+    const { width, height } = this.scale
+
+    this.playerBehind = new Player(this, width * 0.3, height * 0.3)
+    this.playerFront = new Player(this, width * 0.7, height * 0.3)
+    this.add.existing(this.playerBehind)
+    this.add.existing(this.playerFront)
+
+    this.input.keyboard.on('keydown-S', this.playerFront.jump.bind(this.playerBehind))
+    this.input.keyboard.on('keydown-K', this.playerFront.jump.bind(this.playerFront))
+
+    document.getElementById('left-control')?.addEventListener('click', this.playerBehind.jump.bind(this.playerBehind))
+    document.getElementById('right-control')?.addEventListener('click', this.playerFront.jump.bind(this.playerFront))
+  }
+
   protected setCamera () {
     const { height } = this.scale
-    this.cameras.main.startFollow(this.doge, false, 1, 1)
+    this.cameras.main.startFollow(this.playerBehind, false, 1, 1)
     this.cameras.main.followOffset.set(NumberSettings.CameraOffsetX, 0)
     this.cameras.main.setBounds(0, 0, Number.MAX_SAFE_INTEGER, height)
   }
@@ -147,8 +157,15 @@ export default class Game extends Phaser.Scene {
 
     this.add.existing(obstaclePair.upper)
     this.add.existing(obstaclePair.lower)
-    this.physics.add.overlap(obstaclePair.upper, this.doge, this.handleOverlap.bind(this), undefined, this)
-    this.physics.add.overlap(obstaclePair.lower, this.doge, this.handleOverlap.bind(this), undefined, this)
+
+    const addOverlap = (object: Player) => {
+      this.physics.add.overlap(obstaclePair.upper, object, this.handleOverlap.bind(this), undefined, this)
+      this.physics.add.overlap(obstaclePair.lower, object, this.handleOverlap.bind(this), undefined, this)
+    }
+
+    addOverlap(this.playerFront)
+    addOverlap(this.playerBehind)
+
     this.allObstacles.push(obstaclePair)
   }
 
@@ -183,15 +200,19 @@ export default class Game extends Phaser.Scene {
   }
 
   protected handleOverlap (object1: Phaser.GameObjects.GameObject, object2: Phaser.GameObjects.GameObject) {
-    if ((object2 as Doge).objectState === DogeProperty.State.Dead) return
+    if ((object2 as Player).objectState === DogeProperty.State.Dead) return
+
+    let buff: DogeProperty.Buff
 
     switch ((object1 as NormalGameObject).texture) {
       case Texture.Object.TubeShort:
       case Texture.Object.TubeLong:
-        this.doge.dead(object1 as Tube)
+        this.playerBehind.dead(object1 as Tube)
         break
       case Texture.Charactor.Husky:
-        this.doge.buff = this.buffLoot()
+        buff = this.buffLoot()
+        this.playerBehind.setBuff(buff)
+        this.playerFront.setBuff(buff)
 
         this.lootBox.upper?.handleOverlapped()
         this.lootBox.lower?.handleOverlapped()
@@ -209,20 +230,30 @@ export default class Game extends Phaser.Scene {
   }
 
   protected setLootBox (x: number) {
+    const addOverlap = (object: Player) => {
+      if (!(this.lootBox.upper && this.lootBox.middle && this.lootBox.lower)) return
+      this.physics.add.overlap(this.lootBox.upper, object, this.handleOverlap.bind(this), undefined, this)
+      this.physics.add.overlap(this.lootBox.middle, object, this.handleOverlap.bind(this), undefined, this)
+      this.physics.add.overlap(this.lootBox.lower, object, this.handleOverlap.bind(this), undefined, this)
+    }
+
     if (this.lootBox.upper) {
       // console.log('has loot box')
       this.lootBox.lower?.setPosition(x, NumberSettings.LowerLootBoxPosition)
+      this.lootBox.middle?.setPosition(x, NumberSettings.MiddleLootBoxPosition)
       this.lootBox.upper?.setPosition(x, NumberSettings.UpperLootBoxPosition)
     } else {
       // console.log('new box')
       this.lootBox.upper = new LootBox(this, x, NumberSettings.UpperLootBoxPosition)
+      this.lootBox.middle = new LootBox(this, x, NumberSettings.MiddleLootBoxPosition)
       this.lootBox.lower = new LootBox(this, x, NumberSettings.LowerLootBoxPosition)
 
       this.add.existing(this.lootBox.upper)
+      this.add.existing(this.lootBox.middle)
       this.add.existing(this.lootBox.lower)
 
-      this.physics.add.overlap(this.lootBox.upper, this.doge, this.handleOverlap.bind(this), undefined, this)
-      this.physics.add.overlap(this.lootBox.lower, this.doge, this.handleOverlap.bind(this), undefined, this)
+      addOverlap(this.playerFront)
+      addOverlap(this.playerBehind)
     }
   }
 

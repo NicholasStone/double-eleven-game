@@ -9,6 +9,7 @@ html, body {
 
 #app {
 	margin-top: 10px;
+	position: relative;
 	width: auto;
 	height: auto;
 }
@@ -28,4 +29,31 @@ canvas {
 	font-size: 24px;
 
 	transition: all 20ms linear;
+}
+
+.control {
+	position: absolute;
+	bottom: 20px;
+	left: 0;
+	right: 0;
+	height: auto;
+}
+
+.control-item{
+	position: absolute;
+	height: 100px;
+	width: 100px;
+	bottom: 0;
+
+	border-radius: 50%;
+
+	background-color: #00ff00;
+}
+
+.control-item.left {
+	left: 20px;
+}
+
+.control-item.right {
+	right: 20px;
 }
