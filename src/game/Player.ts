@@ -15,15 +15,15 @@ type BuffPack = {
 
 export default class Player extends Phaser.GameObjects.Container {
   private _objectState: DogeProperty.State = DogeProperty.State.Forward
+  private _objectGravityY = 0
 
-  buff: Array<BuffPack> = []
+  private buff: Array<BuffPack> = []
 
   protected object!: Phaser.GameObjects.Image
   objectBody!: Phaser.Physics.Arcade.Body
 
   protected bindJump!: Function
   private jumpVelocity = NumberSettings.GoUpVelocity
-  private objectGravityY = 0
 
   get objectState (): DogeProperty.State {
     return this._objectState
@@ -31,6 +31,17 @@ export default class Player extends Phaser.GameObjects.Container {
 
   set objectState (value: DogeProperty.State) {
     this._objectState = value
+  }
+
+  get objectGravityY (): number {
+    return this._objectGravityY
+  }
+
+  set objectGravityY (value: number) {
+    if (this._objectGravityY === value) return
+
+    this._objectGravityY = value
+    this.objectBody.setGravityY(value)
   }
 
   constructor (scene: Phaser.Scene, x: number, y: number) {
