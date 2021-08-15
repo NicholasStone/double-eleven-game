@@ -2,52 +2,54 @@ import Phaser from 'phaser'
 
 import Texture from '@/constants/texture'
 import NumberSettings from '@/constants/number-settings'
-import DogeProperty from '@/constants/doge-property'
+import PlayerProperty from '@/constants/player-properties'
 import Scenes from '@/constants/scenes'
 import Tube from '@/game/Tube'
+import Animates from '@/constants/animates'
 
 type BuffPack = {
-  buff: DogeProperty.Buff;
+  buff: PlayerProperty.Buff;
   diff: number;
   origin: number;
   current: number;
 }
 
 export default class Player extends Phaser.GameObjects.Container {
-  private _objectState: DogeProperty.State = DogeProperty.State.Forward
+  private _objectState: PlayerProperty.State = PlayerProperty.State.Forward
   private _objectGravityY = 0
 
   private buff: Array<BuffPack> = []
 
-  protected object!: Phaser.GameObjects.Image
+  protected object!: Phaser.GameObjects.Sprite
   objectBody!: Phaser.Physics.Arcade.Body
 
   protected bindJump!: Function
   private jumpVelocity = NumberSettings.GoUpVelocity
 
-  get objectState (): DogeProperty.State {
+  get objectState(): PlayerProperty.State {
     return this._objectState
   }
 
-  set objectState (value: DogeProperty.State) {
+  set objectState(value: PlayerProperty.State) {
     this._objectState = value
   }
 
-  get objectGravityY (): number {
+  get objectGravityY(): number {
     return this._objectGravityY
   }
 
-  set objectGravityY (value: number) {
+  set objectGravityY(value: number) {
     if (this._objectGravityY === value) return
 
     this._objectGravityY = value
     this.objectBody.setGravityY(value)
   }
 
-  constructor (scene: Phaser.Scene, x: number, y: number) {
+  constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y)
 
-    this.object = scene.add.image(0, 0, Texture.Charactor.Akita).setOrigin(0, 0)
+    this.object = scene.add.sprite(0, 0, Texture.Charactor.RedBird, 'frame_01.png')
+    this.object.play(Animates.RedBirdFly)
     this.add(this.object)
 
     scene.physics.add.existing(this)
@@ -60,13 +62,13 @@ export default class Player extends Phaser.GameObjects.Container {
     this.objectGravityY = NumberSettings.GravityY
   }
 
-  preUpdate () {
+  preUpdate() {
     if (this.scene.scene.isActive(Scenes.GAMEOVER)) return
 
     switch (this.objectState) {
-      case DogeProperty.State.Dead:
+      case PlayerProperty.State.Dead:
         break
-      case DogeProperty.State.Forward:
+      case PlayerProperty.State.Forward:
         if (this.objectBody.blocked.down || this.objectBody.blocked.up) {
           this.dead()
         }
@@ -74,7 +76,7 @@ export default class Player extends Phaser.GameObjects.Container {
     }
   }
 
-  setBuff (buff: DogeProperty.Buff) {
+  setBuff(buff: PlayerProperty.Buff) {
     const buffPack: BuffPack = {
       buff,
       diff: 0,
@@ -83,33 +85,33 @@ export default class Player extends Phaser.GameObjects.Container {
     }
 
     switch (buff) {
-      case DogeProperty.Buff.NONE:
+      case PlayerProperty.Buff.NONE:
         this.objectGravityY = NumberSettings.GravityY
         this.jumpVelocity = NumberSettings.GoUpVelocity
         this.buff = []
         break
 
-      case DogeProperty.Buff.MOER_GRAVITY:
+      case PlayerProperty.Buff.MOER_GRAVITY:
         buffPack.diff = NumberSettings.MoreGravityDiff
         buffPack.origin = this.objectGravityY
         buffPack.current = this.objectGravityY += NumberSettings.MoreGravityDiff
         break
-      case DogeProperty.Buff.LESS_GRAVITY:
+      case PlayerProperty.Buff.LESS_GRAVITY:
         buffPack.diff = NumberSettings.LessGravityDiff
         buffPack.origin = this.objectGravityY
         buffPack.current = this.objectGravityY += NumberSettings.LessGravityDiff
         break
-      case DogeProperty.Buff.LESS_UPPER_VELOCITY:
+      case PlayerProperty.Buff.LESS_UPPER_VELOCITY:
         buffPack.diff = NumberSettings.LessUpperVelocity
         buffPack.origin = this.objectGravityY
         buffPack.current = this.jumpVelocity += NumberSettings.LessUpperVelocity
         break
-      case DogeProperty.Buff.MORE_UPPER_VELOCITY:
+      case PlayerProperty.Buff.MORE_UPPER_VELOCITY:
         buffPack.diff = NumberSettings.MoreUpperVelocity
         buffPack.origin = this.objectGravityY
         buffPack.current = this.jumpVelocity += NumberSettings.MoreUpperVelocity
         break
-      case DogeProperty.Buff.INVINCIBLE:
+      case PlayerProperty.Buff.INVINCIBLE:
         this.objectBody.setBounceY(1)
         this.objectBody.setCollideWorldBounds(true)
 
@@ -125,7 +127,7 @@ export default class Player extends Phaser.GameObjects.Container {
     this.buff.push(buffPack)
   }
 
-  dead (tube?: Tube) {
+  dead(tube?: Tube) {
     if (this.buff) {
       tube?.handleImpact()
       return
@@ -140,7 +142,7 @@ export default class Player extends Phaser.GameObjects.Container {
     this.scene.scene.run(Scenes.GAMEOVER)
   }
 
-  jump () {
+  jump() {
     this.objectBody.setVelocityY(this.jumpVelocity)
   }
 }

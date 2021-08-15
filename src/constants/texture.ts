@@ -20,7 +20,9 @@ namespace Texture {
   export enum Charactor {
     Husky = 'husky',
     Samoyed = 'samoyed',
-    Akita = 'akita'
+    Akita = 'akita',
+    BlurBird = 'blue-bird',
+    RedBird = 'red-bird'
   }
 }
 

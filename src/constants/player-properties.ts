@@ -1,4 +1,4 @@
-namespace DogeProperty {
+namespace PlayerProperty {
   export enum State {
     Dead,
     Forward,
@@ -14,4 +14,4 @@ namespace DogeProperty {
   }
 }
 
-export default DogeProperty
+export default PlayerProperty

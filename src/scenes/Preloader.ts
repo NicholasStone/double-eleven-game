@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 import Texture from '@/constants/texture'
 import Scenes from '@/constants/scenes'
-// import Animates from '@/constants/animates'
+import Animates from '@/constants/animates'
 
 export default class Preloader extends Phaser.Scene {
   constructor() {
@@ -23,9 +23,20 @@ export default class Preloader extends Phaser.Scene {
     this.load.image(Texture.Charactor.Husky, 'assets/characters/husky.png')
     this.load.image(Texture.Charactor.Samoyed, 'assets/characters/samoyed.png')
     this.load.image(Texture.Charactor.Akita, 'assets/characters/akita.png')
+
+    this.load.atlas(Texture.Charactor.BlurBird, 'assets/characters/blue-bird.png', 'assets/characters/blue-bird.json')
+    this.load.atlas(Texture.Charactor.BlurBird, 'assets/characters/red-bird.png', 'assets/characters/red-bird.json')
   }
 
   public create() {
+
+    this.anims.create({
+      key: Animates.RedBirdFly,
+      frames: Texture.Charactor.RedBird,
+      frameRate: 35,
+      repeat: -1
+    })
+
     this.scene.start(Scenes.READY)
   }
 

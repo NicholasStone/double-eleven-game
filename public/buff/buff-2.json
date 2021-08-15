@@ -1,0 +1,36 @@
+{"frames": {
+
+"buff_2_1.png":
+{
+	"frame": {"x":1,"y":301,"w":113,"h":118},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":30,"y":47,"w":113,"h":118},
+	"sourceSize": {"w":192,"h":192}
+},
+"buff_2_2.png":
+{
+	"frame": {"x":1,"y":168,"w":131,"h":137},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":30,"y":28,"w":131,"h":137},
+	"sourceSize": {"w":192,"h":192}
+},
+"buff_2_3.png":
+{
+	"frame": {"x":1,"y":1,"w":157,"h":165},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":18,"y":8,"w":157,"h":165},
+	"sourceSize": {"w":192,"h":192}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "buff-2.png",
+	"format": "RGBA8888",
+	"size": {"w":159,"h":415},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:8a22a721b22b72384478179d9efe3077:3f665aa3b408699ae8ef54d231827e61:2e22ecdbc4416a50a5777bb643b54791$"
+}
+}

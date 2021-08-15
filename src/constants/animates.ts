@@ -1,9 +1,6 @@
 namespace Animates {
-  export enum NinjaCat {
-    Walk = 'walk',
-    Jump = 'jump',
-    Fall = 'fall'
-  }
+  export const BlueBirdFly = 'blue-bird-fly'
+  export const RedBirdFly = 'red-bird-fly'
 }
 
 export default Animates
