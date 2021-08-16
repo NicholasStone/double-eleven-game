@@ -15,7 +15,7 @@ type BuffPack = {
 }
 
 export default class Player extends Phaser.GameObjects.Container {
-  private _objectState: PlayerProperty.State = PlayerProperty.State.Forward
+  private _objectState: PlayerProperty.State = PlayerProperty.State.Alive
   private _objectGravityY = 0
 
   private buff: Array<BuffPack> = []
@@ -23,33 +23,35 @@ export default class Player extends Phaser.GameObjects.Container {
   protected object!: Phaser.GameObjects.Sprite
   objectBody!: Phaser.Physics.Arcade.Body
 
-  protected bindJump!: Function
+  protected bindJump!: () => void
   private jumpVelocity = NumberSettings.GoUpVelocity
 
-  get objectState(): PlayerProperty.State {
+  get objectState (): PlayerProperty.State {
     return this._objectState
   }
 
-  set objectState(value: PlayerProperty.State) {
+  set objectState (value: PlayerProperty.State) {
     this._objectState = value
   }
 
-  get objectGravityY(): number {
+  get objectGravityY (): number {
     return this._objectGravityY
   }
 
-  set objectGravityY(value: number) {
+  set objectGravityY (value: number) {
     if (this._objectGravityY === value) return
 
     this._objectGravityY = value
     this.objectBody.setGravityY(value)
   }
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
+  constructor (scene: Phaser.Scene, x: number, y: number, type: 'red' | 'blue') {
     super(scene, x, y)
 
-    this.object = scene.add.sprite(0, 0, Texture.Charactor.RedBird, 'frame_01.png')
-    this.object.play(Animates.RedBirdFly)
+    this.object = scene.add.sprite(0, 0, type === 'red' ? Texture.Charactor.RedBird : Texture.Charactor.BlurBird, 'frame_01.png ')
+      .setOrigin(0, 0)
+      .setFlipX(true)
+      .play(type === 'red' ? Animates.RedBirdFly : Animates.BlueBirdFly)
     this.add(this.object)
 
     scene.physics.add.existing(this)
@@ -60,15 +62,18 @@ export default class Player extends Phaser.GameObjects.Container {
     this.objectBody.setVelocityX(200)
     this.objectBody.setGravityX(NumberSettings.GravityX)
     this.objectGravityY = NumberSettings.GravityY
+
+    this.bindJump = this.jump.bind(this)
+    this.setBuff(PlayerProperty.Buff.IMMORTAL)
   }
 
-  preUpdate() {
+  preUpdate () {
     if (this.scene.scene.isActive(Scenes.GAMEOVER)) return
 
     switch (this.objectState) {
       case PlayerProperty.State.Dead:
         break
-      case PlayerProperty.State.Forward:
+      case PlayerProperty.State.Alive:
         if (this.objectBody.blocked.down || this.objectBody.blocked.up) {
           this.dead()
         }
@@ -76,7 +81,7 @@ export default class Player extends Phaser.GameObjects.Container {
     }
   }
 
-  setBuff(buff: PlayerProperty.Buff) {
+  setBuff (buff: PlayerProperty.Buff) {
     const buffPack: BuffPack = {
       buff,
       diff: 0,
@@ -111,7 +116,8 @@ export default class Player extends Phaser.GameObjects.Container {
         buffPack.origin = this.objectGravityY
         buffPack.current = this.jumpVelocity += NumberSettings.MoreUpperVelocity
         break
-      case PlayerProperty.Buff.INVINCIBLE:
+      case PlayerProperty.Buff.IMMORTAL:
+        this.objectState = PlayerProperty.State.Immortal
         this.objectBody.setBounceY(1)
         this.objectBody.setCollideWorldBounds(true)
 
@@ -119,6 +125,7 @@ export default class Player extends Phaser.GameObjects.Container {
           this.objectBody.setBounceY(0)
           this.objectBody.setCollideWorldBounds(false)
           this.buff.splice(this.buff.indexOf(buffPack), 1)
+          this.objectState = PlayerProperty.State.Alive
         }, 5000)
 
         break
@@ -127,22 +134,26 @@ export default class Player extends Phaser.GameObjects.Container {
     this.buff.push(buffPack)
   }
 
-  dead(tube?: Tube) {
-    if (this.buff) {
+  dead (tube?: Tube, ignoreImmortal = false) {
+    if (this.objectState === PlayerProperty.State.Immortal && !ignoreImmortal) {
       tube?.handleImpact()
       return
     }
+    this.object.stop()
     this.objectBody.setGravity(0, 0)
     this.objectBody.setVelocity(0)
     this.objectBody.setAcceleration(0, 0)
+    this.objectState = PlayerProperty.State.Dead
 
-    this.scene.input.keyboard.off('keyup-SPACE', this.bindJump)
-    this.scene.input.off('pointerdown', this.bindJump)
+    // this.scene.input.keyboard.off('keyup-SPACE', this.bindJump)
+    // this.scene.input.off('pointerdown', this.bindJump)
 
     this.scene.scene.run(Scenes.GAMEOVER)
   }
 
-  jump() {
+  jump () {
+    if (this.objectState === PlayerProperty.State.Dead || this.scene.scene.isActive(Scenes.GAMEOVER)) return
+
     this.objectBody.setVelocityY(this.jumpVelocity)
   }
 }

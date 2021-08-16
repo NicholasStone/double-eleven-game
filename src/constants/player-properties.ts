@@ -1,16 +1,21 @@
 namespace PlayerProperty {
   export enum State {
     Dead,
-    Forward,
+    Alive,
+    Immortal,
   }
 
   export enum Buff {
     NONE,
+    IMMORTAL,
     MORE_UPPER_VELOCITY,
     LESS_UPPER_VELOCITY,
-    INVINCIBLE,
     MOER_GRAVITY,
-    LESS_GRAVITY,
+    LESS_GRAVITY
+  }
+
+  export enum Events {
+    Dead = 'dead'
   }
 }
 

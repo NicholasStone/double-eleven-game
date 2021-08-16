@@ -4,11 +4,11 @@ import Scenes from '@/constants/scenes'
 import Animates from '@/constants/animates'
 
 export default class Preloader extends Phaser.Scene {
-  constructor() {
+  constructor () {
     super(Scenes.PRELOADER)
   }
 
-  public preload() {
+  public preload () {
     this.loadBackground()
 
     this.load.image(Texture.Image.Wasted, 'assets/images/wasted.png')
@@ -25,22 +25,38 @@ export default class Preloader extends Phaser.Scene {
     this.load.image(Texture.Charactor.Akita, 'assets/characters/akita.png')
 
     this.load.atlas(Texture.Charactor.BlurBird, 'assets/characters/blue-bird.png', 'assets/characters/blue-bird.json')
-    this.load.atlas(Texture.Charactor.BlurBird, 'assets/characters/red-bird.png', 'assets/characters/red-bird.json')
+    this.load.atlas(Texture.Charactor.RedBird, 'assets/characters/red-bird.png', 'assets/characters/red-bird.json')
+
+    this.load.atlas(Texture.Effects.Buff_1, 'assets/effects/buff-1.png', 'assets/effects/buff-1.json')
+    this.load.atlas(Texture.Effects.Buff_2, 'assets/effects/buff-2.png', 'assets/effects/buff-2.json')
   }
 
-  public create() {
-
+  public create () {
     this.anims.create({
       key: Animates.RedBirdFly,
       frames: Texture.Charactor.RedBird,
-      frameRate: 35,
+      frameRate: 15,
       repeat: -1
+    })
+
+    this.anims.create({
+      key: Animates.BlueBirdFly,
+      frames: Texture.Charactor.BlurBird,
+      frameRate: 15,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: Animates.BuffEffect,
+      frames: Texture.Effects.Buff_1,
+      frameRate: 6,
+      repeat: 0
     })
 
     this.scene.start(Scenes.READY)
   }
 
-  protected loadBackground() {
+  protected loadBackground () {
     this.load.image(Texture.Background.Midground, 'assets/background/bg_midground.png')
     this.load.image(Texture.Background.Foreground, 'assets/background/bg_foreground.png')
     this.load.image(Texture.Background.Sky, 'assets/background/bg_sky.png')

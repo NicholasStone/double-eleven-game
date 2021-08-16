@@ -4,18 +4,18 @@ import Texture from '@/constants/texture'
 export default abstract class NormalGameObject extends Phaser.GameObjects.Container {
   public texture: Texture.Object | Texture.Charactor
 
-  protected object!: Phaser.GameObjects.Image
+  protected object!: Phaser.GameObjects.Sprite
   objectBody!: Phaser.Physics.Arcade.Body
 
   protected constructor (scene: Phaser.Scene, x: number, y: number, texture: Texture.Charactor | Texture.Object) {
     super(scene, x, y)
     this.texture = texture
 
-    this.addImage()
+    this.addObject()
   }
 
-  protected addImage () {
-    this.object = this.scene.add.image(0, 0, this.texture).setOrigin(0, 0)
+  protected addObject () {
+    this.object = this.scene.add.sprite(0, 0, this.texture).setOrigin(0, 0)
     this.add(this.object)
   }
 

@@ -24,6 +24,11 @@ namespace Texture {
     BlurBird = 'blue-bird',
     RedBird = 'red-bird'
   }
+
+  export enum Effects {
+    Buff_1 = 'buff-1',
+    Buff_2 = 'buff-2'
+  }
 }
 
 export default Texture

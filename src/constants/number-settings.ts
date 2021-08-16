@@ -36,12 +36,12 @@ namespace NumberSettings {
   export const ObstacleInterval = 160
   export const LootBoxInterval = 5
   export const DistanceBetweenObstacleAndLootBox = Width * 0.7
-  export const UpperLootBoxPosition = Height * 0.25
+  export const UpperLootBoxPosition = Height * 0.15
   export const MiddleLootBoxPosition = Height * 0.5
-  export const LowerLootBoxPosition = Height * 0.65
+  export const LowerLootBoxPosition = Height * 0.85
 
   /**
-   * buff 数值设定
+   * effects 数值设定
    */
   export const LessGravityDiff = GravityY * -0.3
   export const MoreGravityDiff = GravityY * 0.3
