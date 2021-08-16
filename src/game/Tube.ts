@@ -3,6 +3,8 @@ import Phaser from 'phaser'
 import Texture from '@/constants/texture'
 
 export default class Tube extends NormalGameObject {
+  effective = true
+
   constructor (scene: Phaser.Scene, x: number, y: number, type: Texture.Object.TubeLong | Texture.Object.TubeShort) {
     super(scene, x, y, type)
 
@@ -10,6 +12,7 @@ export default class Tube extends NormalGameObject {
   }
 
   handleImpact () {
+    this.effective = false
     this.objectBody.setGravityY(2000)
   }
 }

@@ -4,6 +4,9 @@ namespace Animates {
   // export enum BirdFly {
   // }
   export const BuffEffect = 'buff-effect'
+  export enum Effects {
+    Example = 'example'
+  }
 }
 
 export default Animates

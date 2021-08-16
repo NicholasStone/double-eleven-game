@@ -34,7 +34,7 @@ namespace NumberSettings {
    * @LootBoxInterval {number} 宝箱间隔（每n个障碍物）
    */
   export const ObstacleInterval = 160
-  export const LootBoxInterval = 5
+  export const LootBoxInterval = 2
   export const DistanceBetweenObstacleAndLootBox = Width * 0.7
   export const UpperLootBoxPosition = Height * 0.15
   export const MiddleLootBoxPosition = Height * 0.5

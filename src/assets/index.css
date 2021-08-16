@@ -41,13 +41,13 @@ canvas {
 
 .control-item{
 	position: absolute;
-	height: 100px;
-	width: 100px;
+	height: 80px;
+	width: 80px;
 	bottom: 0;
 
 	border-radius: 50%;
 
-	background-color: #00ff00;
+	background-color: #00ff0077;
 }
 
 .control-item.left {

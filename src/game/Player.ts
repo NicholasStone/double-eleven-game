@@ -21,7 +21,8 @@ export default class Player extends Phaser.GameObjects.Container {
   private buff: Array<BuffPack> = []
 
   protected object!: Phaser.GameObjects.Sprite
-  objectBody!: Phaser.Physics.Arcade.Body
+  protected effect!: Phaser.GameObjects.Sprite
+  protected objectBody!: Phaser.Physics.Arcade.Body
 
   protected bindJump!: () => void
   private jumpVelocity = NumberSettings.GoUpVelocity
@@ -48,11 +49,18 @@ export default class Player extends Phaser.GameObjects.Container {
   constructor (scene: Phaser.Scene, x: number, y: number, type: 'red' | 'blue') {
     super(scene, x, y)
 
-    this.object = scene.add.sprite(0, 0, type === 'red' ? Texture.Charactor.RedBird : Texture.Charactor.BlurBird, 'frame_01.png ')
+    this.object = scene.add
+      .sprite(0, 0, type === 'red' ? Texture.Charactor.RedBird : Texture.Charactor.BlurBird, 'frame_01.png ')
       .setOrigin(0, 0)
       .setFlipX(true)
       .play(type === 'red' ? Animates.RedBirdFly : Animates.BlueBirdFly)
     this.add(this.object)
+
+    this.effect = scene.add
+      .sprite(0, 0, Texture.Effects.Buff_1, 'buff_1_1.png')
+      .setOrigin(0.25, 0.25)
+      .setVisible(false)
+    this.add(this.effect)
 
     scene.physics.add.existing(this)
 
@@ -65,6 +73,8 @@ export default class Player extends Phaser.GameObjects.Container {
 
     this.bindJump = this.jump.bind(this)
     this.setBuff(PlayerProperty.Buff.IMMORTAL)
+
+    setTimeout(() => this.playEffect(Animates.Effects.Example), 2000)
   }
 
   preUpdate () {
@@ -119,11 +129,10 @@ export default class Player extends Phaser.GameObjects.Container {
       case PlayerProperty.Buff.IMMORTAL:
         this.objectState = PlayerProperty.State.Immortal
         this.objectBody.setBounceY(1)
-        this.objectBody.setCollideWorldBounds(true)
+        buffPack.buff = PlayerProperty.Buff.IMMORTAL
 
         setTimeout(() => {
           this.objectBody.setBounceY(0)
-          this.objectBody.setCollideWorldBounds(false)
           this.buff.splice(this.buff.indexOf(buffPack), 1)
           this.objectState = PlayerProperty.State.Alive
         }, 5000)
@@ -132,6 +141,19 @@ export default class Player extends Phaser.GameObjects.Container {
     }
 
     this.buff.push(buffPack)
+  }
+
+  getBuffList () {
+    return this.buff.map(item => item.buff)
+  }
+
+  playEffect (effect: Animates.Effects) {
+    this.effect
+      .setVisible(true)
+      .play(effect)
+      .on(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+        this.effect.setVisible(false)
+      })
   }
 
   dead (tube?: Tube, ignoreImmortal = false) {

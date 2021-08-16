@@ -3,9 +3,9 @@ import Game from '@/scenes/Game'
 
 const buffName = [
   '什么也没有了',
+  '不朽',
   '跳的更高',
   '跳的没那么高',
-  '不朽',
   '下坠更快',
   '下坠没那么快'
 ]
@@ -26,7 +26,9 @@ export default class ScoreBoard extends Phaser.GameObjects.Container {
 
     // this.setPosition(scrollX + 50, 0)
 
-    // this.hudEl.getElementsByClassName('buff')[0].innerHTML = this.gameScene.playerBehind.buff.join(',') + ''
+    this.hudEl.getElementsByClassName('buff')[0].innerHTML = this.gameScene.playerBehind.getBuffList()
+      .map(item => buffName[item])
+      .join(',')
     this.hudEl.getElementsByClassName('score')[0].innerHTML = Math.floor(scrollX / 3) + ''
   }
 }
