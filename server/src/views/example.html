@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>test encrypt</title>
+</head>
+<body>
+<h1>index</h1>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jsencrypt/3.2.1/jsencrypt.min.js"></script>
+<script type="text/javascript">
+  !(function () {
+    const pubKeyString = `
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuwp8Opf/3TYEpl49VRha
+LxIrXV58OEiuhhMFslb/zlVqx15gtJyFLONZ+22DD5l+u6B5M8GnIGd5CyB5J7HR
+YSyf3YjAWO4nqzjsBwnMkTbX1PeP3z5LHD6eu6oZLmtZC0mZnBcwwX7gxAuGhlzX
+8OF1yeYH62WaE0QTC4c4xGTGr53vvVNu0OzxoknZms+Dzl7M+0Rknz5LsXodNmmA
+S0vBbtkwtcyJw082Exoiw+BZFtFPj1yX2kuycPHm9Uo1wEKL2iROlt2T5XAaIKwQ
+/AV59+QkSkYvmMOnXag7MzQIYwQpJKksSi75rl4G9Jqr1qI9KqpquQ2RWtnmqg2w
+6QIDAQAB
+-----END PUBLIC KEY-----`
+
+    const data = {
+      foo: 'bar'
+    }
+
+    const handleDataEncrypt = ({ data: { token } }) => {
+      const encryptor = new JSEncrypt()
+      encryptor.setPublicKey(pubKeyString)
+      const rsaEncrypted = encryptor.encrypt(JSON.stringify(Object.assign(Object.create(null), data, { token })))
+      console.log(rsaEncrypted)
+      axios.post('/api/rank', {
+        data: rsaEncrypted
+      })
+    }
+
+    axios.post('/api/player').then(handleDataEncrypt)
+  })()
+</script>
+</body>
+</html>

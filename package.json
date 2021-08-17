@@ -4,7 +4,8 @@
   "private": "true",
   "scripts": {
     "serve": "npx webpack server --config build/webpack.config.js",
-    "build": "npx rimraf dist && npx cross-env NODE_ENV=production && npx webpack --config build/webpack.config.js"
+    "build:game": "npx rimraf dist && npx cross-env NODE_ENV=production && npx webpack --config build/webpack.config.js",
+    "build:server": "npx rimraf server-dist && npx cross-env NODE_ENV=production && tsc -p server/ "
   },
   "keywords": [],
   "author": "",
@@ -17,6 +18,14 @@
     "@types/node": "^15.6.1",
     "@typescript-eslint/eslint-plugin": "^4.24.0",
     "@typescript-eslint/parser": "^4.24.0",
+    "@types/koa": "^2.11.6",
+    "@types/koa-bodyparser": "^4.3.0",
+    "@types/koa-json": "^2.0.18",
+    "@types/koa-logger": "^3.1.1",
+    "@types/koa__router": "^8.0.3",
+    "@types/node-rsa": "^1.1.1",
+    "@types/validator": "^13.6.3",
+    "tslib": "^2.0.3",
     "babel-core": "^6.26.3",
     "babel-loader": "7",
     "compression-webpack-plugin": "^7.1.2",
@@ -46,6 +55,17 @@
   "dependencies": {
     "@types/lodash": "^4.14.171",
     "lodash": "^4.17.21",
-    "phaser": "^3.54.0"
+    "phaser": "^3.54.0",
+    "@koa/router": "^10.0.0",
+    "js-sha256": "^0.9.0",
+    "koa": "^2.13.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-json": "^2.0.2",
+    "koa-logger": "^3.2.1",
+    "koa-views": "^7.0.1",
+    "mysql2": "^2.3.0",
+    "node-rsa": "^1.1.1",
+    "sequelize": "^6.6.5",
+    "sqlite3": "^5.0.2"
   }
 }

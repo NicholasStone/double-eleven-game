@@ -4,3 +4,6 @@ node_modules
 texture/
 .DS_Store
 dist/*
+server-dist/*
+
+*.log
