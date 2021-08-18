@@ -6,6 +6,7 @@ import PlayerProperty from '@/constants/player-properties'
 import Scenes from '@/constants/scenes'
 import Tube from '@/game/Tube'
 import Animates from '@/constants/animates'
+import InitialXVelocity = NumberSettings.InitialXVelocity
 
 type BuffPack = {
   buff: PlayerProperty.Buff;
@@ -49,7 +50,7 @@ export default class Player extends Phaser.GameObjects.Container {
     this.add(this.object)
 
     this.effect = scene.add
-      .sprite(0, 0, Texture.Effects.Buff_1, 'buff_1_1.png')
+      .sprite(0, 0, Texture.Effects.Buff1, 'buff_1_1.png')
       .setOrigin(0.25, 0.25)
       .setVisible(false)
     this.add(this.effect)
@@ -60,7 +61,7 @@ export default class Player extends Phaser.GameObjects.Container {
     this.objectBody.setSize(this.object.width * 0.8, this.object.height * 0.8)
     this.objectBody.setOffset(this.objectBody.width * 0.1, this.objectBody.height * 0.1)
     this.objectBody.setCollideWorldBounds(true)
-    this.objectBody.setVelocityX(200)
+    this.objectBody.setVelocityX(InitialXVelocity)
     this.objectBody.setGravityX(NumberSettings.GravityX)
     this.objectGravityY = NumberSettings.GravityY
 
@@ -164,9 +165,6 @@ export default class Player extends Phaser.GameObjects.Container {
     this.objectBody.setVelocity(0)
     this.objectBody.setAcceleration(0, 0)
     this.objectState = PlayerProperty.State.Dead
-
-    // this.scene.input.keyboard.off('keyup-SPACE', this.bindJump)
-    // this.scene.input.off('pointerdown', this.bindJump)
 
     this.scene.scene.run(Scenes.GAMEOVER)
   }

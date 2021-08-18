@@ -13,12 +13,7 @@ export default class Preloader extends Phaser.Scene {
 
     this.load.image(Texture.Image.Wasted, 'assets/images/wasted.png')
 
-    this.load.image(Texture.Object.Igloo, 'assets/object/igloo.png')
-    this.load.image(Texture.Object.Obstacle, 'assets/object/iceberg.png')
-    this.load.atlas(Texture.Object.IceBlock, 'assets/block/block-ground.png', 'assets/block/block-ground.json')
-
-    this.load.image(Texture.Object.TubeLong, 'assets/object/tube-1.png')
-    this.load.image(Texture.Object.TubeShort, 'assets/object/tube-2.png')
+    this.load.image(Texture.Object.Tube, 'assets/object/tube.png')
 
     this.load.image(Texture.Charactor.Husky, 'assets/characters/husky.png')
     this.load.image(Texture.Charactor.Samoyed, 'assets/characters/samoyed.png')
@@ -27,8 +22,8 @@ export default class Preloader extends Phaser.Scene {
     this.load.atlas(Texture.Charactor.BlurBird, 'assets/characters/blue-bird.png', 'assets/characters/blue-bird.json')
     this.load.atlas(Texture.Charactor.RedBird, 'assets/characters/red-bird.png', 'assets/characters/red-bird.json')
 
-    this.load.atlas(Texture.Effects.Buff_1, 'assets/effects/buff-1.png', 'assets/effects/buff-1.json')
-    this.load.atlas(Texture.Effects.Buff_2, 'assets/effects/buff-2.png', 'assets/effects/buff-2.json')
+    this.load.atlas(Texture.Effects.Buff1, 'assets/effects/buff-1.png', 'assets/effects/buff-1.json')
+    this.load.atlas(Texture.Effects.Buff2, 'assets/effects/buff-2.png', 'assets/effects/buff-2.json')
   }
 
   public create () {
@@ -48,14 +43,14 @@ export default class Preloader extends Phaser.Scene {
 
     this.anims.create({
       key: Animates.Effects.Example,
-      frames: Texture.Effects.Buff_1,
+      frames: Texture.Effects.Buff1,
       frameRate: 6,
       repeat: 0
     })
 
     this.anims.create({
       key: Animates.BuffEffect,
-      frames: Texture.Effects.Buff_2,
+      frames: Texture.Effects.Buff2,
       frameRate: 6,
       repeat: 0
     })

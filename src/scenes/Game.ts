@@ -7,15 +7,24 @@ import NumberSettings from '@/constants/number-settings'
 import DogeProperty from '@/constants/player-properties'
 import LootBox from '@/game/LootBox'
 import Tube from '@/game/Tube'
-import ObstacleSettings from '@/constants/obstacle-settings'
-import { getRandomInArray } from '@/shared/random'
+import { getRandomInArray, getRandomNumber } from '@/shared/random'
 import ScoreBoard from '@/game/ScoreBoard'
+import TubeSpaceBetween = NumberSettings.TubeSpaceBetween
+import TubeHeight = NumberSettings.TubeHeight
 
 export type TubePair = {
+  id: number,
   upper: Tube,
   lower: Tube,
-  modality: ObstacleSettings.Modality
+  offset: number
 }
+
+const idGenerator = (function * () {
+  let i = 1
+  while (true) {
+    yield i++
+  }
+})()
 
 export default class Game extends Phaser.Scene {
   playerBehind!: Player
@@ -150,10 +159,7 @@ export default class Game extends Phaser.Scene {
   }
 
   protected setObstacle (x: number) {
-    const obstaclePairs = Object.values(ObstacleSettings.Modality).filter(item => typeof item === 'number')
-    const modality = getRandomInArray(obstaclePairs) as ObstacleSettings.Modality
-
-    const obstaclePair = this.tubePairFactory(modality, x)
+    const obstaclePair = this.tubePairFactory(x)
 
     this.add.existing(obstaclePair.upper)
     this.add.existing(obstaclePair.lower)
@@ -169,33 +175,16 @@ export default class Game extends Phaser.Scene {
     this.allObstacles.push(obstaclePair)
   }
 
-  protected tubePairFactory (modality: ObstacleSettings.Modality, x: number): TubePair {
+  protected tubePairFactory (x: number): TubePair {
     const { height } = this.scale
 
-    let upper: Tube
-    let lower: Tube
-    switch (modality) {
-      case ObstacleSettings.Modality.TowShort:
-        upper = new Tube(this, x, 0, Texture.Object.TubeShort)
-        lower = new Tube(this, x, height - ObstacleSettings.ObstacleHeight.Short, Texture.Object.TubeShort)
-        break
-      case ObstacleSettings.Modality.ShortDown:
-        upper = new Tube(this, x, 0, Texture.Object.TubeLong)
-        lower = new Tube(this, x, height - ObstacleSettings.ObstacleHeight.Short, Texture.Object.TubeShort)
-        break
-      case ObstacleSettings.Modality.ShortUp:
-        upper = new Tube(this, x, 0, Texture.Object.TubeShort)
-        lower = new Tube(this, x, height - ObstacleSettings.ObstacleHeight.Long, Texture.Object.TubeLong)
-        break
-      case ObstacleSettings.Modality.TowLong:
-      default:
-        upper = new Tube(this, x, 0, Texture.Object.TubeLong)
-        lower = new Tube(this, x, height - ObstacleSettings.ObstacleHeight.Long, Texture.Object.TubeLong)
-        break
-    }
+    const offset = getRandomNumber(height * 0.2, height * 0.8)
 
     return {
-      upper, lower, modality
+      id: idGenerator.next().value as number,
+      upper: new Tube(this, x, offset - TubeSpaceBetween / 2 - TubeHeight, 'upper'),
+      lower: new Tube(this, x, offset + TubeSpaceBetween / 2, 'lower'),
+      offset
     }
   }
 
@@ -205,21 +194,18 @@ export default class Game extends Phaser.Scene {
     let buff: DogeProperty.Buff
 
     switch ((object1 as NormalGameObject).texture) {
-      case Texture.Object.TubeShort:
-      case Texture.Object.TubeLong:
+      case Texture.Object.Tube:
 
-        // if ((object1 as Tube).effective) {
-        //   this.playerBehind.dead(object1 as Tube)
-        //   this.playerFront.dead(object1 as Tube)
-        // }
+        if ((object1 as Tube).effective) {
+          this.playerBehind.dead(object1 as Tube)
+          this.playerFront.dead(object1 as Tube)
+        }
 
         break
       case Texture.Charactor.Husky:
         buff = this.buffLoot()
         this.playerBehind.setBuff(buff)
-        this.playerFront.setBuff(buff)
-
-        console.log(object1);
+        this.playerFront.setBuff(buff);
 
         (object1 as LootBox).handleOverlapped()
         break
@@ -230,9 +216,7 @@ export default class Game extends Phaser.Scene {
 
   protected buffLoot (): DogeProperty.Buff {
     const buffArray = Object.values(DogeProperty.Buff).filter(item => typeof item === 'number')
-    // console.log(buffArray)
     return getRandomInArray(buffArray) as DogeProperty.Buff
-    // return DogeProperty.Buff.LESS_GRAVITY
   }
 
   protected setLootBox (x: number) {
