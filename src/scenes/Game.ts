@@ -10,7 +10,6 @@ import Tube from '@/game/Tube'
 import ObstacleSettings from '@/constants/obstacle-settings'
 import { getRandomInArray } from '@/shared/random'
 import ScoreBoard from '@/game/ScoreBoard'
-import { updateFileWithText } from 'ts-loader/dist/servicesHost'
 
 export type TubePair = {
   upper: Tube,
@@ -209,16 +208,18 @@ export default class Game extends Phaser.Scene {
       case Texture.Object.TubeShort:
       case Texture.Object.TubeLong:
 
-        if ((object1 as Tube).effective) {
-          this.playerBehind.dead(object1 as Tube)
-          this.playerFront.dead(object1 as Tube)
-        }
+        // if ((object1 as Tube).effective) {
+        //   this.playerBehind.dead(object1 as Tube)
+        //   this.playerFront.dead(object1 as Tube)
+        // }
 
         break
       case Texture.Charactor.Husky:
         buff = this.buffLoot()
         this.playerBehind.setBuff(buff)
-        this.playerFront.setBuff(buff);
+        this.playerFront.setBuff(buff)
+
+        console.log(object1);
 
         (object1 as LootBox).handleOverlapped()
         break

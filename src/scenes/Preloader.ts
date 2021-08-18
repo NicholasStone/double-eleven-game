@@ -53,6 +53,13 @@ export default class Preloader extends Phaser.Scene {
       repeat: 0
     })
 
+    this.anims.create({
+      key: Animates.BuffEffect,
+      frames: Texture.Effects.Buff_2,
+      frameRate: 6,
+      repeat: 0
+    })
+
     this.scene.start(Scenes.READY)
   }
 

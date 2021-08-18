@@ -15,7 +15,7 @@ type BuffPack = {
 }
 
 export default class Player extends Phaser.GameObjects.Container {
-  private _objectState: PlayerProperty.State = PlayerProperty.State.Alive
+  objectState: PlayerProperty.State = PlayerProperty.State.Alive
   private _objectGravityY = 0
 
   private buff: Array<BuffPack> = []
@@ -26,14 +26,6 @@ export default class Player extends Phaser.GameObjects.Container {
 
   protected bindJump!: () => void
   private jumpVelocity = NumberSettings.GoUpVelocity
-
-  get objectState (): PlayerProperty.State {
-    return this._objectState
-  }
-
-  set objectState (value: PlayerProperty.State) {
-    this._objectState = value
-  }
 
   get objectGravityY (): number {
     return this._objectGravityY
@@ -65,7 +57,8 @@ export default class Player extends Phaser.GameObjects.Container {
     scene.physics.add.existing(this)
 
     this.objectBody = this.body as Phaser.Physics.Arcade.Body
-    this.objectBody.setSize(this.object.width, this.object.height)
+    this.objectBody.setSize(this.object.width * 0.8, this.object.height * 0.8)
+    this.objectBody.setOffset(this.objectBody.width * 0.1, this.objectBody.height * 0.1)
     this.objectBody.setCollideWorldBounds(true)
     this.objectBody.setVelocityX(200)
     this.objectBody.setGravityX(NumberSettings.GravityX)
@@ -78,7 +71,12 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   preUpdate () {
-    if (this.scene.scene.isActive(Scenes.GAMEOVER)) return
+    if (this.scene.scene.isActive(Scenes.GAMEOVER)) {
+      if (this.objectState !== PlayerProperty.State.Dead) {
+        this.dead()
+      }
+      return
+    }
 
     switch (this.objectState) {
       case PlayerProperty.State.Dead:

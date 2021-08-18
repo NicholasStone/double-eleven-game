@@ -15,13 +15,14 @@ export default class LootBox extends NormalGameObject {
   }
 
   handleOverlapped () {
+    console.log('overlapped')
     this.objectBody.setEnable(false)
     this.object.play(Animates.BuffEffect).setOrigin(0.5, 0.5).on(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
-      this.object.setVisible(false)
+      this.setVisible(false)
       this.animePlay = window.setTimeout(() => {
         this.objectBody.setEnable(true)
         this.object.setVisible(true)
-      }, 5000)
+      }, 2000)
     })
   }
 }
