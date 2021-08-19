@@ -8,27 +8,53 @@ html, body {
 }
 
 #app {
-	margin-top: 10px;
 	position: relative;
+	max-width: 1024px;
+	max-height: 576px;
 	width: auto;
 	height: auto;
 }
 
 canvas {
-	max-width: 1024px;
+	margin: 0 auto;
 	width: 100%;
-	height: auto;
+	height: 100%;
 }
 
 .score-board {
 	position: absolute;
 
 	width: 200px;
-	height: 100px;
+	height: auto;
 
-	font-size: 24px;
+	background: #ffffff99;
 
-	transition: all 20ms linear;
+	font-size: 20px;
+
+	clear: both;
+	overflow: hidden;
+}
+
+.score-board .item-name {
+	float: left;
+	width: 30%;
+	text-align: right;
+}
+
+.score-board .item-desc {
+	float: left;
+	margin-left: 5%;
+	width: 65%;
+}
+
+.score-board .buff-list {
+	margin: 0;
+	list-style: none;
+	padding: 0;
+}
+
+.score-board .buff-list .expire {
+	margin-left: 5px;
 }
 
 .control {

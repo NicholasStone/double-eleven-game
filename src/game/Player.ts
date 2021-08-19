@@ -13,6 +13,7 @@ type BuffPack = {
   diff: number;
   origin: number;
   current: number;
+  expire: number;
 }
 
 export default class Player extends Phaser.GameObjects.Container {
@@ -68,7 +69,7 @@ export default class Player extends Phaser.GameObjects.Container {
     this.bindJump = this.jump.bind(this)
     this.setBuff(PlayerProperty.Buff.IMMORTAL)
 
-    setTimeout(() => this.playEffect(Animates.Effects.Example), 2000)
+    // setTimeout(() => this.playEffect(Animates.Effects.Example), 2000)
   }
 
   preUpdate () {
@@ -95,7 +96,8 @@ export default class Player extends Phaser.GameObjects.Container {
       buff,
       diff: 0,
       origin: 0,
-      current: 0
+      current: 0,
+      expire: -1
     }
 
     switch (buff) {
@@ -110,25 +112,30 @@ export default class Player extends Phaser.GameObjects.Container {
         buffPack.origin = this.objectGravityY
         buffPack.current = this.objectGravityY += NumberSettings.MoreGravityDiff
         break
+
       case PlayerProperty.Buff.LESS_GRAVITY:
         buffPack.diff = NumberSettings.LessGravityDiff
         buffPack.origin = this.objectGravityY
         buffPack.current = this.objectGravityY += NumberSettings.LessGravityDiff
         break
+
       case PlayerProperty.Buff.LESS_UPPER_VELOCITY:
         buffPack.diff = NumberSettings.LessUpperVelocity
         buffPack.origin = this.objectGravityY
         buffPack.current = this.jumpVelocity += NumberSettings.LessUpperVelocity
         break
+
       case PlayerProperty.Buff.MORE_UPPER_VELOCITY:
         buffPack.diff = NumberSettings.MoreUpperVelocity
         buffPack.origin = this.objectGravityY
         buffPack.current = this.jumpVelocity += NumberSettings.MoreUpperVelocity
         break
+
       case PlayerProperty.Buff.IMMORTAL:
         this.objectState = PlayerProperty.State.Immortal
         this.objectBody.setBounceY(1)
         buffPack.buff = PlayerProperty.Buff.IMMORTAL
+        buffPack.expire = Date.now() + 5000
 
         setTimeout(() => {
           this.objectBody.setBounceY(0)
@@ -143,7 +150,14 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   getBuffList () {
-    return this.buff.map(item => item.buff)
+    if (this.buff.length) {
+      return this.buff.map(({ buff, expire }) => ({ buff, expire }))
+    } else {
+      return [{
+        buff: PlayerProperty.Buff.NONE,
+        expire: -1
+      }]
+    }
   }
 
   playEffect (effect: Animates.Effects) {
