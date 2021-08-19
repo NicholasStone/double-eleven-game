@@ -19,6 +19,7 @@ export default class ScoreBoard extends Phaser.GameObjects.Container {
 
     this.gameScene = scene
     this.hudEl = document.getElementById('hud') || document.createElement('div')
+    this.hudEl.classList.remove('hidden')
   }
 
   preUpdate () {
@@ -50,6 +51,6 @@ export default class ScoreBoard extends Phaser.GameObjects.Container {
         buffListEl.appendChild(buffItem)
       })
 
-    this.hudEl.getElementsByClassName('score')[0].innerHTML = Math.floor(scrollX / 3) + ''
+    this.hudEl.getElementsByClassName('score')[0].innerHTML = Math.floor(scrollX / 30) + ''
   }
 }

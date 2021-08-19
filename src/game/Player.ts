@@ -67,7 +67,7 @@ export default class Player extends Phaser.GameObjects.Container {
     this.objectGravityY = NumberSettings.GravityY
 
     this.bindJump = this.jump.bind(this)
-    this.setBuff(PlayerProperty.Buff.IMMORTAL)
+    // this.setBuff(PlayerProperty.Buff.IMMORTAL)
 
     // setTimeout(() => this.playEffect(Animates.Effects.Example), 2000)
   }

@@ -21,6 +21,11 @@ canvas {
 	height: 100%;
 }
 
+.hidden {
+	display: none;
+	visibility: hidden;
+}
+
 .score-board {
 	position: absolute;
 
