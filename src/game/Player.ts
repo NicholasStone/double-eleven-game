@@ -9,12 +9,18 @@ import Animates from '@/constants/animates'
 import InitialXVelocity = NumberSettings.InitialXVelocity
 
 type BuffPack = {
-  buff: PlayerProperty.Buff;
-  diff: number;
-  origin: number;
-  current: number;
-  expire: number;
+  buff: PlayerProperty.Buff
+  diff: number
+  origin: number
+  current: number
+  expire: number
+  timer?: number
+  level: number
 }
+
+// interface HandleBuff {
+//   ()
+// }
 
 export default class Player extends Phaser.GameObjects.Container {
   objectState: PlayerProperty.State = PlayerProperty.State.Alive
@@ -92,12 +98,45 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   setBuff (buff: PlayerProperty.Buff) {
-    const buffPack: BuffPack = {
-      buff,
-      diff: 0,
-      origin: 0,
-      current: 0,
-      expire: -1
+    const createBuffPack = (): BuffPack => {
+      return {
+        buff,
+        diff: 0,
+        origin: 0,
+        current: 0,
+        expire: -1,
+        level: 1
+      }
+    }
+
+    const handleMoreGravity = () => {
+      buffPack.diff = NumberSettings.MoreGravityDiff
+      buffPack.origin = this.objectGravityY
+      buffPack.current = this.objectGravityY += NumberSettings.MoreGravityDiff
+    }
+
+    const handleLessGravity = () => {
+      buffPack.diff = NumberSettings.LessGravityDiff
+      buffPack.origin = this.objectGravityY
+      buffPack.current = this.objectGravityY += NumberSettings.LessGravityDiff
+    }
+
+    const handleMoreUpperVelocity = () => {
+      buffPack.diff = NumberSettings.MoreUpperVelocity
+      buffPack.origin = this.objectGravityY
+      buffPack.current = this.jumpVelocity += NumberSettings.MoreUpperVelocity
+    }
+
+    const handleLessUpperVelocity = () => {
+      buffPack.diff = NumberSettings.LessUpperVelocity
+      buffPack.origin = this.objectGravityY
+      buffPack.current = this.jumpVelocity += NumberSettings.LessUpperVelocity
+    }
+
+    const buffIndex = this.buff.findIndex(item => item.buff === buff)
+    const buffPack = buffIndex >= 0 ? this.buff[buffIndex] : createBuffPack()
+    if (buffIndex >= 0) {
+      buffPack.level++
     }
 
     switch (buff) {
@@ -105,57 +144,59 @@ export default class Player extends Phaser.GameObjects.Container {
         this.objectGravityY = NumberSettings.GravityY
         this.jumpVelocity = NumberSettings.GoUpVelocity
         this.buff = []
+        this.objectState = PlayerProperty.State.Alive
         break
 
       case PlayerProperty.Buff.MOER_GRAVITY:
-        buffPack.diff = NumberSettings.MoreGravityDiff
-        buffPack.origin = this.objectGravityY
-        buffPack.current = this.objectGravityY += NumberSettings.MoreGravityDiff
+        handleMoreGravity()
         break
 
       case PlayerProperty.Buff.LESS_GRAVITY:
-        buffPack.diff = NumberSettings.LessGravityDiff
-        buffPack.origin = this.objectGravityY
-        buffPack.current = this.objectGravityY += NumberSettings.LessGravityDiff
+        handleLessGravity()
         break
 
       case PlayerProperty.Buff.LESS_UPPER_VELOCITY:
-        buffPack.diff = NumberSettings.LessUpperVelocity
-        buffPack.origin = this.objectGravityY
-        buffPack.current = this.jumpVelocity += NumberSettings.LessUpperVelocity
+        handleLessUpperVelocity()
         break
 
       case PlayerProperty.Buff.MORE_UPPER_VELOCITY:
-        buffPack.diff = NumberSettings.MoreUpperVelocity
-        buffPack.origin = this.objectGravityY
-        buffPack.current = this.jumpVelocity += NumberSettings.MoreUpperVelocity
+        handleMoreUpperVelocity()
         break
 
       case PlayerProperty.Buff.IMMORTAL:
+        if (buffIndex >= 0) {
+          // @ts-ignore
+          clearTimeout(buff[buffIndex]?.timer as number)
+          this.buff.splice(buffIndex, 1)
+        }
+
         this.objectState = PlayerProperty.State.Immortal
         this.objectBody.setBounceY(1)
         buffPack.buff = PlayerProperty.Buff.IMMORTAL
-        buffPack.expire = Date.now() + 5000
+        buffPack.expire = Date.now() + NumberSettings.ImmortalDuration
 
-        setTimeout(() => {
+        buffPack.timer = window.setTimeout(() => {
           this.objectBody.setBounceY(0)
           this.buff.splice(this.buff.indexOf(buffPack), 1)
           this.objectState = PlayerProperty.State.Alive
-        }, 5000)
+        }, NumberSettings.ImmortalDuration)
 
         break
     }
 
-    this.buff.push(buffPack)
+    if (buffIndex < 0 && buff) {
+      this.buff.push(buffPack)
+    }
   }
 
   getBuffList () {
     if (this.buff.length) {
-      return this.buff.map(({ buff, expire }) => ({ buff, expire }))
+      return this.buff.map(({ buff, expire, level }) => ({ buff, expire, level }))
     } else {
       return [{
         buff: PlayerProperty.Buff.NONE,
-        expire: -1
+        expire: -1,
+        level: 0
       }]
     }
   }

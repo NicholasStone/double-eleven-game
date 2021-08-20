@@ -182,8 +182,8 @@ export default class Game extends Phaser.Scene {
 
     return {
       id: idGenerator.next().value as number,
-      upper: new Tube(this, x, offset - TubeSpaceBetween / 2 - TubeHeight, 'upper'),
-      lower: new Tube(this, x, offset + TubeSpaceBetween / 2, 'lower'),
+      upper: new Tube(this, x, Math.max(offset - TubeSpaceBetween / 2 - TubeHeight, 15 - TubeHeight), 'upper'),
+      lower: new Tube(this, x, Math.min(offset + TubeSpaceBetween / 2, height - 15), 'lower'),
       offset
     }
   }
@@ -215,6 +215,7 @@ export default class Game extends Phaser.Scene {
   }
 
   protected buffLoot (): DogeProperty.Buff {
+    // return 2
     const buffArray = Object.values(DogeProperty.Buff).filter(item => typeof item === 'number')
     return getRandomInArray(buffArray) as DogeProperty.Buff
   }

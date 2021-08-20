@@ -10,6 +10,13 @@ const buffName = [
   '下坠没那么快'
 ]
 
+function appendTextNode (parent: HTMLElement, tag: string, text: string, className: Array<string> = []) {
+  const textParent = document.createElement(tag)
+  textParent.appendChild(document.createTextNode(text))
+  textParent.classList.add(...className)
+  parent.appendChild(textParent)
+}
+
 export default class ScoreBoard extends Phaser.GameObjects.Container {
   protected hudEl: HTMLElement
   protected gameScene: Game
@@ -38,15 +45,15 @@ export default class ScoreBoard extends Phaser.GameObjects.Container {
     }
 
     this.gameScene.playerFront.getBuffList()
-      .forEach(({ buff, expire }) => {
+      .forEach(({ buff, expire, level }) => {
         const buffItem = document.createElement('li')
         buffItem.classList.add('item')
         buffItem.appendChild(document.createTextNode(buffName[buff]))
         if (expire > 0) {
-          const expireEl = document.createElement('span')
-          expireEl.appendChild(document.createTextNode(((expire - Date.now()) / 1000).toFixed(1) + '秒'))
-          expireEl.classList.add('expire')
-          buffItem.appendChild(expireEl)
+          appendTextNode(buffItem, 'span', ((expire - Date.now()) / 1000).toFixed(1) + '秒', ['expire'])
+        }
+        if (level > 1) {
+          appendTextNode(buffItem, 'span', `x${level}`, ['expire'])
         }
         buffListEl.appendChild(buffItem)
       })

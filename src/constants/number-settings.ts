@@ -32,7 +32,7 @@ namespace NumberSettings {
    * 初始横向速度
    */
 
-  export const InitialXVelocity = 100
+  export const InitialXVelocity = 300
 
   /**
    * 障碍物设置
@@ -42,11 +42,12 @@ namespace NumberSettings {
   export const TubeHeight = 600
   export const TubeWidth = 50
   export const ObstacleInterval = 220
-  export const LootBoxInterval = 15
+  export const LootBoxInterval = 5
   export const DistanceBetweenObstacleAndLootBox = Width * 0.7
   export const UpperLootBoxPosition = Height * 0.15
   export const MiddleLootBoxPosition = Height * 0.5
   export const LowerLootBoxPosition = Height * 0.85
+  export const ImmortalDuration = 10000
 
   /**
    * effects 数值设定
@@ -55,7 +56,7 @@ namespace NumberSettings {
   export const MoreGravityDiff = GravityY * 0.3
   export const LessUpperVelocity = Height * 0.2
   export const MoreUpperVelocity = Height * -0.2
-  export const TubeSpaceBetween = Height * 0.3
+  export const TubeSpaceBetween = Height * 0.7
 }
 
 export default NumberSettings

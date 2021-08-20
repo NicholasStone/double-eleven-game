@@ -5,6 +5,7 @@ import Animates from '@/constants/animates'
 
 export default class LootBox extends NormalGameObject {
   private animePlay: number = -1
+  private effect!: Phaser.GameObjects.Sprite
 
   constructor (scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, Texture.Charactor.Husky)
@@ -12,17 +13,27 @@ export default class LootBox extends NormalGameObject {
     const { width, height } = this.object
     this.object.setOrigin(0.5, 0.5)
     this.objectBody.setOffset(-width / 2, -height / 2)
+
+    this.effect = this.scene.add
+      .sprite(0, 0, Texture.Effects.Buff2)
+      .setOrigin(0, 0)
+      .setVisible(false)
+
+    this.add(this.effect)
   }
 
   handleOverlapped () {
-    console.log('overlapped')
     this.objectBody.setEnable(false)
-    this.object.play(Animates.BuffEffect).setOrigin(0.5, 0.5).on(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
-      this.setVisible(false)
-      this.animePlay = window.setTimeout(() => {
-        this.objectBody.setEnable(true)
-        this.object.setVisible(true)
-      }, 2000)
-    })
+    this.effect
+      .setVisible(true)
+      .play(Animates.BuffEffect).setOrigin(0.5, 0.5).on(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+        this.setVisible(false)
+        this.effect.setVisible(false)
+        setTimeout(() => {
+          console.log('re enable loot box')
+          this.objectBody.setEnable(true)
+          this.setVisible(true)
+        }, 3000)
+      })
   }
 }
