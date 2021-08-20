@@ -103,7 +103,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'double eleven game',
       cdn: {
-        js: ['https://cdn.bootcdn.net/ajax/libs/phaser/3.55.2/phaser.min.js'],
+        js: ['https://nichospace-box.oss-cn-shanghai.aliyuncs.com/game/resource/phaser.min.js'],
         css: ['https://cdn.bootcdn.net/ajax/libs/modern-normalize/1.0.0/modern-normalize.min.css']
       },
       template: path.resolve(__dirname, '../index.html'),
