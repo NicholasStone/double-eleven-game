@@ -33,20 +33,21 @@ export default class Player extends Phaser.GameObjects.Container {
   protected objectBody!: Phaser.Physics.Arcade.Body
 
   protected bindJump!: () => void
+  protected ghostCountdown!: number
   private jumpVelocity = NumberSettings.GoUpVelocity
 
-  get objectGravityY (): number {
+  get objectGravityY(): number {
     return this._objectGravityY
   }
 
-  set objectGravityY (value: number) {
+  set objectGravityY(value: number) {
     if (this._objectGravityY === value) return
 
     this._objectGravityY = value
     this.objectBody.setGravityY(value)
   }
 
-  constructor (scene: Phaser.Scene, x: number, y: number, type: 'red' | 'blue') {
+  constructor(scene: Phaser.Scene, x: number, y: number, type: 'red' | 'blue') {
     super(scene, x, y)
 
     this.object = scene.add
@@ -78,7 +79,7 @@ export default class Player extends Phaser.GameObjects.Container {
     // setTimeout(() => this.playEffect(Animates.Effects.Example), 2000)
   }
 
-  preUpdate () {
+  preUpdate() {
     if (this.scene.scene.isActive(Scenes.GAMEOVER)) {
       if (this.objectState !== PlayerProperty.State.Dead) {
         this.dead()
@@ -94,10 +95,17 @@ export default class Player extends Phaser.GameObjects.Container {
           this.dead()
         }
         break
+      case PlayerProperty.State.Ghost:
+        // 获取边界
+        const leftEdge = 0
+        const rightEdge = 0
+        // 对比位置
+        const { width, x } = this.objectBody
+        break;
     }
   }
 
-  setBuff (buff: PlayerProperty.Buff) {
+  setBuff(buff: PlayerProperty.Buff) {
     const createBuffPack = (): BuffPack => {
       return {
         buff,
@@ -189,7 +197,7 @@ export default class Player extends Phaser.GameObjects.Container {
     }
   }
 
-  getBuffList () {
+  getBuffList() {
     if (this.buff.length) {
       return this.buff.map(({ buff, expire, level }) => ({ buff, expire, level }))
     } else {
@@ -201,7 +209,7 @@ export default class Player extends Phaser.GameObjects.Container {
     }
   }
 
-  playEffect (effect: Animates.Effects) {
+  playEffect(effect: Animates.Effects) {
     this.effect
       .setVisible(true)
       .play(effect)
@@ -210,7 +218,7 @@ export default class Player extends Phaser.GameObjects.Container {
       })
   }
 
-  dead (tube?: Tube, ignoreImmortal = false) {
+  dead(tube?: Tube, ignoreImmortal = false) {
     if (this.objectState === PlayerProperty.State.Immortal && !ignoreImmortal) {
       tube?.handleImpact()
       return
@@ -224,7 +232,19 @@ export default class Player extends Phaser.GameObjects.Container {
     this.scene.scene.run(Scenes.GAMEOVER)
   }
 
-  jump () {
+  ghost(tube?: Tube) {
+    if (this.objectState === PlayerProperty.State.Immortal) {
+      tube?.handleImpact()
+      return
+    }
+
+    this.objectBody.setVelocity(this.objectBody.velocity.x * 2)
+    this.objectBody.setAcceleration(0, 0)
+    this.objectBody.setBounceY(1)
+    this.ghostCountdown = window.setTimeout(() => this.dead(), 10000)
+  }
+
+  jump() {
     if (this.objectState === PlayerProperty.State.Dead || this.scene.scene.isActive(Scenes.GAMEOVER)) return
 
     this.objectBody.setVelocityY(this.jumpVelocity)

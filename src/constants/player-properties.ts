@@ -3,6 +3,7 @@ namespace PlayerProperty {
     Dead,
     Alive,
     Immortal,
+    Ghost
   }
 
   export enum Buff {
