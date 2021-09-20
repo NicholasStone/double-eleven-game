@@ -4,7 +4,7 @@ import Scenes from '@/constants/scenes'
 import Player from '@/game/Player'
 import NormalGameObject from '@/game/NormalGameObject'
 import NumberSettings from '@/constants/number-settings'
-import DogeProperty from '@/constants/player-properties'
+import PlayerProperty from '@/constants/player-properties'
 import LootBox from '@/game/LootBox'
 import Tube from '@/game/Tube'
 import { getRandomInArray, getRandomNumber } from '@/shared/random'
@@ -19,7 +19,7 @@ export type TubePair = {
   offset: number
 }
 
-const idGenerator = (function* () {
+const idGenerator = (function * () {
   let i = 1
   while (true) {
     yield i++
@@ -29,6 +29,8 @@ const idGenerator = (function* () {
 export default class Game extends Phaser.Scene {
   playerBehind!: Player
   playerFront!: Player
+
+  protected ghostPlayer: Player | null = null
 
   protected sky!: Phaser.GameObjects.TileSprite
   protected midBackground!: Phaser.GameObjects.TileSprite
@@ -49,57 +51,77 @@ export default class Game extends Phaser.Scene {
   // protected scoreBoard!: Phaser.GameObjects.DOMElement
   protected scoreBoard!: ScoreBoard
 
-  constructor() {
+  protected cameraCenter!: Phaser.GameObjects.Rectangle
+
+  constructor () {
     super(Scenes.GAME)
   }
 
-  public create() {
+  public create () {
     const { width, height } = this.scale
 
     this.setBackground()
     this.setBorder()
     this.physics.world.setBounds(0, NumberSettings.BorderHeight, Number.MAX_SAFE_INTEGER, height - NumberSettings.BorderHeight * 2)
-    this.setCharactersAndControls()
+    // this.setPlayerBehind()
+    this.setPlayerFront()
     this.setObstacle(width - NumberSettings.CameraOffsetX - NumberSettings.ObstacleInterval)
     this.setScoreBoard()
     this.setCamera()
   }
 
-  public update(time: number, delta: number) {
+  public update (time: number, delta: number) {
     this.moveBackground()
     this.wrapObstacleAndLootBox()
   }
 
-  protected setCharactersAndControls() {
+  protected setPlayerBehind () {
     const { width, height } = this.scale
 
-    this.playerBehind = new Player(this, width * 0.3, height * 0.3, 'blue')
-    this.playerFront = new Player(this, width * 0.7, height * 0.3, 'red')
+    this.playerBehind = new Player(this, width * 0.2, height * 0.3, 'blue')
     this.add.existing(this.playerBehind)
+
+    this.playerBehind.setControl('keydown-S', 'left-control')
+  }
+
+  protected setPlayerFront () {
+    const { width, height } = this.scale
+
+    this.playerFront = new Player(this, width * 0.6, height * 0.3, 'red')
     this.add.existing(this.playerFront)
 
-    this.input.keyboard.on('keydown-S', this.playerFront.jump.bind(this.playerBehind))
-    this.input.keyboard.on('keydown-K', this.playerFront.jump.bind(this.playerFront))
-
-    document.getElementById('left-control')?.addEventListener('click', this.playerBehind.jump.bind(this.playerBehind))
-    document.getElementById('right-control')?.addEventListener('click', this.playerFront.jump.bind(this.playerFront))
+    this.playerFront.setControl('keydown-K', 'right-control')
   }
 
-  protected setCamera() {
-    const { height } = this.scale
-    this.cameras.main.startFollow(this.playerBehind, false, 1, 1)
-    this.cameras.main.followOffset.set(NumberSettings.CameraOffsetX, 0)
+  // protected unsetControl () {
+  //   this.input.keyboard.off('keydown-S', this.playerBehind.jump.bind(this.playerBehind))
+  //   this.input.keyboard.off('keydown-K', this.playerFront.jump.bind(this.playerFront))
+  //
+  //   document.getElementById('left-control')?.removeEventListener('click', this.playerBehind.jump.bind(this.playerBehind))
+  //   document.getElementById('right-control')?.removeEventListener('click', this.playerFront.jump.bind(this.playerFront))
+  // }
+
+  protected setCamera () {
+    const { width, height } = this.scale
+    this.cameraCenter = this.add.rectangle(width * 0.3, height / 2, 10, 10, 0xffffff)
+    this.physics.add.existing(this.cameraCenter)
+    const centerBody = this.cameraCenter.body as Phaser.Physics.Arcade.Body
+    centerBody.setGravityX(NumberSettings.GravityX)
+    centerBody.setVelocityX(NumberSettings.InitialXVelocity)
+    this.cameras.main.startFollow(this.cameraCenter, false, 1, 1)
     this.cameras.main.setBounds(0, 0, Number.MAX_SAFE_INTEGER, height)
+
+    console.log(this.cameras.main)
   }
 
-  protected setBorder() {
+  protected setBorder () {
     const { height } = this.scale
 
     this.add.rectangle(0, 0, Number.MAX_SAFE_INTEGER, NumberSettings.BorderHeight, 0x00ff00, 0.5).setOrigin(0, 0)
     this.add.rectangle(0, height - NumberSettings.BorderHeight, Number.MAX_SAFE_INTEGER, NumberSettings.BorderHeight, 0x00ff00, 0.5).setOrigin(0, 0)
   }
 
-  protected setBackground() {
+  protected setBackground () {
     const { width, height } = this.scale
 
     this.sky = this.add.tileSprite(0, 0, width, height, Texture.Background.Sky).setOrigin(0, 0).setScrollFactor(0, 0)
@@ -107,13 +129,13 @@ export default class Game extends Phaser.Scene {
     this.foreBackground = this.add.tileSprite(0, height - 88, width, height, Texture.Background.Foreground).setOrigin(0, 0).setScrollFactor(0, 0)
   }
 
-  protected moveBackground() {
+  protected moveBackground () {
     this.sky.setTilePosition(this.cameras.main.scrollX * 0.4)
     this.midBackground.setTilePosition(this.cameras.main.scrollX * 0.8)
     this.foreBackground.setTilePosition(this.cameras.main.scrollX * 1.2)
   }
 
-  protected wrapObstacleAndLootBox() {
+  protected wrapObstacleAndLootBox () {
     if (this.scene.isActive(Scenes.GAMEOVER)) return
 
     const { scrollX } = this.cameras.main
@@ -151,14 +173,14 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  protected clearObstacle(obstacle: TubePair) {
+  protected clearObstacle (obstacle: TubePair) {
     const index = this.allObstacles.indexOf(obstacle)
     this.allObstacles.splice(index, 1)
     obstacle.lower.destroy()
     obstacle.upper.destroy()
   }
 
-  protected setObstacle(x: number) {
+  protected setObstacle (x: number) {
     const obstaclePair = this.tubePairFactory(x)
 
     this.add.existing(obstaclePair.upper)
@@ -175,7 +197,7 @@ export default class Game extends Phaser.Scene {
     this.allObstacles.push(obstaclePair)
   }
 
-  protected tubePairFactory(x: number): TubePair {
+  protected tubePairFactory (x: number): TubePair {
     const { height } = this.scale
 
     const offset = getRandomNumber(height * 0.2, height * 0.8)
@@ -188,25 +210,31 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  protected handleOverlap(object1: Phaser.GameObjects.GameObject, object2: Phaser.GameObjects.GameObject) {
+  protected handleOverlap (object1: Phaser.GameObjects.GameObject, object2: Phaser.GameObjects.GameObject) {
     const player = object2 as Player
 
-    if (player.objectState === DogeProperty.State.Dead) return
+    if (player.objectState === PlayerProperty.State.Dead) return
 
-    let buff: DogeProperty.Buff
+    let buff: PlayerProperty.Buff
+
+    const tube = object1 as Tube
+    const box = object1 as LootBox
 
     switch ((object1 as NormalGameObject).texture) {
       case Texture.Object.Tube:
-        const tube = object1 as Tube
 
         if (tube.effective) {
+          if (this.ghostPlayer && this.ghostPlayer !== player) {
+            // this.playerBehind.dead()
+            this.playerFront.dead()
+          }
+          this.ghostPlayer = player
           player.ghost(object1 as Tube)
         }
 
         break
       case Texture.Charactor.Husky:
-        const box = object1 as LootBox
-
+        if (player.objectState === PlayerProperty.State.Ghost) return
         buff = this.buffLoot()
         player.setBuff(buff)
 
@@ -217,13 +245,13 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  protected buffLoot(): DogeProperty.Buff {
+  protected buffLoot (): PlayerProperty.Buff {
     // return 2
-    const buffArray = Object.values(DogeProperty.Buff).filter(item => typeof item === 'number')
-    return getRandomInArray(buffArray) as DogeProperty.Buff
+    const buffArray = Object.values(PlayerProperty.Buff).filter(item => typeof item === 'number')
+    return getRandomInArray(buffArray) as PlayerProperty.Buff
   }
 
-  protected setLootBox(x: number) {
+  protected setLootBox (x: number) {
     const addOverlap = (object: Player) => {
       if (!(this.lootBox.upper && this.lootBox.middle && this.lootBox.lower)) return
       this.physics.add.overlap(this.lootBox.upper, object, this.handleOverlap.bind(this), undefined, this)
@@ -251,7 +279,7 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  protected setScoreBoard() {
+  protected setScoreBoard () {
     this.scoreBoard = new ScoreBoard(this, 500, 15)
     this.scoreBoard.setPosition(0, 0)
     this.add.existing(this.scoreBoard)

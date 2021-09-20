@@ -32,12 +32,6 @@ export default class ScoreBoard extends Phaser.GameObjects.Container {
   preUpdate () {
     const { scrollX } = this.scene.cameras.main
 
-    // this.setPosition(scrollX + 50, 0)
-
-    // this.hudEl.getElementsByClassName('buff')[0].innerHTML = this.gameScene.playerBehind.getBuffList()
-    //   .map(item => document.createElement('li'))
-    //   .join(',')
-
     const buffListEl = this.hudEl.getElementsByClassName('buff-list')[0]
 
     while (buffListEl.firstChild) {

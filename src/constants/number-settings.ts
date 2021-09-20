@@ -8,7 +8,7 @@ namespace NumberSettings {
   /**
    * 摄像机偏移量
    */
-  export const CameraOffsetX = Width * -0.4
+  export const CameraOffsetX = 0
 
   /**
    * 上下边界高度
