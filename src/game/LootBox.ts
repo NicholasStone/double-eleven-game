@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import Texture from '@/constants/texture'
 import NormalGameObject from '@/game/NormalGameObject'
 import Animates from '@/constants/animates'
+import { ObjectTypes } from '@/constants/object-types'
 
 export default class LootBox extends NormalGameObject {
   private animePlay: number = -1
@@ -9,6 +10,7 @@ export default class LootBox extends NormalGameObject {
 
   constructor (scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, Texture.Charactor.Husky)
+    this.objectType = ObjectTypes.LootBox
     this.addBody()
     const { width, height } = this.object
     this.object.setOrigin(0.5, 0.5)

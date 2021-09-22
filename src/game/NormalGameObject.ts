@@ -1,7 +1,10 @@
 import Phaser from 'phaser'
 import Texture from '@/constants/texture'
+import IObjectType from '@/game/IObjectType'
+import { ObjectTypes } from '@/constants/object-types'
 
-export default abstract class NormalGameObject extends Phaser.GameObjects.Container {
+export default abstract class NormalGameObject extends Phaser.GameObjects.Container implements IObjectType {
+  public objectType!: ObjectTypes
   public texture: Texture.Object | Texture.Charactor
 
   protected object!: Phaser.GameObjects.Sprite
@@ -25,9 +28,5 @@ export default abstract class NormalGameObject extends Phaser.GameObjects.Contai
     const { width, height } = this.object
     this.objectBody = this.body as Phaser.Physics.Arcade.Body
     this.objectBody.setSize(width, height)
-  }
-
-  preUpdate () {
-    if (this.objectBody.onOverlap) console.log(this.objectBody.onOverlap, this.texture)
   }
 }

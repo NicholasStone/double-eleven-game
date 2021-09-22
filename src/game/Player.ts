@@ -6,11 +6,13 @@ import PlayerProperty from '@/constants/player-properties'
 import Scenes from '@/constants/scenes'
 import Tube from '@/game/Tube'
 import Animates from '@/constants/animates'
-import InitialXVelocity = NumberSettings.InitialXVelocity
 import NormalGameObject from '@/game/NormalGameObject'
 import LootBox from '@/game/LootBox'
 import { getRandomInArray } from '@/shared/random'
 import GameEvent from '@/constants/events'
+import IObjectType from '@/game/IObjectType'
+import { ObjectTypes } from '@/constants/object-types'
+import InitialXVelocity = NumberSettings.InitialXVelocity
 
 type BuffPack = {
   buff: PlayerProperty.Buff
@@ -26,7 +28,8 @@ type BuffPack = {
 //   ()
 // }
 
-export default class Player extends Phaser.GameObjects.Container {
+export default class Player extends Phaser.GameObjects.Container implements IObjectType {
+  objectType = ObjectTypes.Player
   objectState: PlayerProperty.State = PlayerProperty.State.Alive
   private _objectGravityY = 0
 
@@ -156,8 +159,8 @@ export default class Player extends Phaser.GameObjects.Container {
     const box = object as LootBox
     const player = object as Player
 
-    switch ((object as NormalGameObject).texture) {
-      case Texture.Object.Tube:
+    switch ((object as NormalGameObject).objectType) {
+      case ObjectTypes.Obstacles:
 
         if (!tube.effective) return
 
@@ -182,14 +185,13 @@ export default class Player extends Phaser.GameObjects.Container {
         }
 
         break
-      case Texture.Charactor.Husky:
+      case ObjectTypes.LootBox:
         if (this.objectState === PlayerProperty.State.Ghost) return
         this.setBuff(this.buffLoot())
 
         box.handleOverlapped()
         break
-      case Texture.Charactor.BlurBird:
-      case Texture.Charactor.RedBird:
+      case ObjectTypes.Player:
         this.reborn()
         player.reborn()
         break

@@ -14,13 +14,13 @@ export default class GameOver extends Phaser.Scene {
 
     this.add.image(width * 0.5, height * 0.5, Texture.Image.Wasted)
 
-    const restartGame = () => {
-      this.scene.start(Scenes.GAME)
-      this.input.keyboard.off('keyup-SPACE', restartGame)
-      this.input.off('pointerup', restartGame)
-    }
-
-    this.input.keyboard.once('keyup-SPACE', restartGame)
-    this.input.once('pointerup', restartGame)
+    // const restartGame = () => {
+    //   this.scene.start(Scenes.GAME)
+    //   this.input.keyboard.off('keyup-SPACE', restartGame)
+    //   this.input.off('pointerup', restartGame)
+    // }
+    //
+    // this.input.keyboard.once('keyup-SPACE', restartGame)
+    // this.input.once('pointerup', restartGame)
   }
 }

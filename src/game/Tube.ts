@@ -1,10 +1,8 @@
 import NormalGameObject from '@/game/NormalGameObject'
 import Phaser from 'phaser'
 import Texture from '@/constants/texture'
-import NumberSettings from '@/constants/number-settings'
-import TubeWidth = NumberSettings.TubeWidth
-import TubeHeight = NumberSettings.TubeHeight
 import { getRandomNumber } from '@/shared/random'
+import { ObjectTypes } from '@/constants/object-types'
 
 function randomTexture (position: 'upper' | 'lower'): Texture.Object {
   const random = getRandomNumber(0, 3)
@@ -33,6 +31,7 @@ export default class Tube extends NormalGameObject {
   constructor (scene: Phaser.Scene, x: number, y: number, position: 'upper' | 'lower') {
     super(scene, x, y, randomTexture(position))
 
+    this.objectType = ObjectTypes.Obstacles
     this.tubePosition = position
     // this.object.setSize(TubeWidth, TubeHeight)
     this.addBody()
