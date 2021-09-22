@@ -7,10 +7,21 @@ namespace Texture {
     Foreground = 'foreground',
     Midground = 'midground',
     Sky = 'sky',
+    Background = 'background',
+    Ground = 'ground',
+    Top = 'Top'
   }
 
   export enum Object {
-    Tube = 'tube'
+    Tube = 'tube',
+    Top1 = 'top-1',
+    Top2 = 'top-2',
+    Top3 = 'top-3',
+    Top4 = 'top-4',
+    Ground1 = 'ground-1',
+    Ground2 = 'ground-2',
+    Ground3 = 'ground-3',
+    Ground4 = 'ground-4',
   }
 
   export enum Charactor {

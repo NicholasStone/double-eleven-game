@@ -1,60 +1,60 @@
 {"frames": {
 
-"frame_01.png":
+"1.png":
 {
-	"frame": {"x":0,"y":0,"w":64,"h":96},
+	"frame": {"x":0,"y":0,"w":56,"h":68},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":96},
-	"sourceSize": {"w":64,"h":96}
+	"spriteSourceSize": {"x":0,"y":0,"w":56,"h":68},
+	"sourceSize": {"w":56,"h":68}
 },
-"frame_02.png":
+"2.png":
 {
-	"frame": {"x":0,"y":96,"w":64,"h":96},
+	"frame": {"x":0,"y":68,"w":56,"h":68},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":96},
-	"sourceSize": {"w":64,"h":96}
+	"spriteSourceSize": {"x":0,"y":0,"w":56,"h":68},
+	"sourceSize": {"w":56,"h":68}
 },
-"frame_03.png":
+"3.png":
 {
-	"frame": {"x":0,"y":192,"w":64,"h":96},
+	"frame": {"x":0,"y":136,"w":56,"h":68},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":96},
-	"sourceSize": {"w":64,"h":96}
+	"spriteSourceSize": {"x":0,"y":0,"w":56,"h":68},
+	"sourceSize": {"w":56,"h":68}
 },
-"frame_04.png":
+"4.png":
 {
-	"frame": {"x":0,"y":288,"w":64,"h":96},
+	"frame": {"x":0,"y":204,"w":56,"h":68},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":96},
-	"sourceSize": {"w":64,"h":96}
+	"spriteSourceSize": {"x":0,"y":0,"w":56,"h":68},
+	"sourceSize": {"w":56,"h":68}
 },
-"frame_05.png":
+"5.png":
 {
-	"frame": {"x":0,"y":384,"w":64,"h":96},
+	"frame": {"x":0,"y":272,"w":56,"h":68},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":96},
-	"sourceSize": {"w":64,"h":96}
+	"spriteSourceSize": {"x":0,"y":0,"w":56,"h":68},
+	"sourceSize": {"w":56,"h":68}
 },
-"frame_06.png":
+"6.png":
 {
-	"frame": {"x":0,"y":480,"w":64,"h":96},
+	"frame": {"x":0,"y":340,"w":56,"h":68},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":96},
-	"sourceSize": {"w":64,"h":96}
+	"spriteSourceSize": {"x":0,"y":0,"w":56,"h":68},
+	"sourceSize": {"w":56,"h":68}
 }},
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
 	"image": "red-bird.png",
 	"format": "RGBA8888",
-	"size": {"w":64,"h":576},
+	"size": {"w":56,"h":408},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:6f7cc6b829a81c88e5d04d86029eefdc:20f2497e36bac542f12a2b73fa711581:6cf5c87e3fb0b0a2ccd186fa5aaefd44$"
+	"smartupdate": "$TexturePacker:SmartUpdate:7bc7ad6566bc9ca6285508e72deb14a4:231237396684ab3c90a8b334f5202790:6cf5c87e3fb0b0a2ccd186fa5aaefd44$"
 }
 }

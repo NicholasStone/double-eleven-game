@@ -13,11 +13,14 @@ export default class Preloader extends Phaser.Scene {
 
     this.load.image(Texture.Image.Wasted, 'assets/images/wasted.png')
 
-    this.load.image(Texture.Object.Tube, 'assets/object/tube.png')
+    this.load.image(Texture.Object.Top1, 'assets/object/top-1.png')
+    this.load.image(Texture.Object.Top2, 'assets/object/top-2.png')
+    this.load.image(Texture.Object.Top3, 'assets/object/top-3.png')
+    this.load.image(Texture.Object.Top4, 'assets/object/top-4.png')
 
     this.load.image(Texture.Charactor.Husky, 'assets/characters/husky.png')
-    this.load.image(Texture.Charactor.Samoyed, 'assets/characters/samoyed.png')
-    this.load.image(Texture.Charactor.Akita, 'assets/characters/akita.png')
+    // this.load.image(Texture.Charactor.Samoyed, 'assets/characters/samoyed.png')
+    // this.load.image(Texture.Charactor.Akita, 'assets/characters/akita.png')
 
     this.load.atlas(Texture.Charactor.BlurBird, 'assets/characters/blue-bird.png', 'assets/characters/blue-bird.json')
     this.load.atlas(Texture.Charactor.RedBird, 'assets/characters/red-bird.png', 'assets/characters/red-bird.json')
@@ -59,8 +62,12 @@ export default class Preloader extends Phaser.Scene {
   }
 
   protected loadBackground () {
-    this.load.image(Texture.Background.Midground, 'assets/background/bg_midground.png')
-    this.load.image(Texture.Background.Foreground, 'assets/background/bg_foreground.png')
-    this.load.image(Texture.Background.Sky, 'assets/background/bg_sky.png')
+    this.load.image(Texture.Background.Background, 'assets/background/background.png')
+    this.load.image(Texture.Background.Top, 'assets/background/top.png')
+    this.load.image(Texture.Background.Ground, 'assets/background/ground.png')
+
+    // this.load.image(Texture.Background.Midground, 'assets/background/bg_midground.png')
+    // this.load.image(Texture.Background.Foreground, 'assets/background/bg_foreground.png')
+    // this.load.image(Texture.Background.Sky, 'assets/background/bg_sky.png')
   }
 }

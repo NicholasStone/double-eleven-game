@@ -28,8 +28,8 @@ export default class Game extends Phaser.Scene {
   players: Array<Player> = []
 
   protected sky!: Phaser.GameObjects.TileSprite
-  protected midBackground!: Phaser.GameObjects.TileSprite
-  protected foreBackground!: Phaser.GameObjects.TileSprite
+  protected top!: Phaser.GameObjects.TileSprite
+  protected ground!: Phaser.GameObjects.TileSprite
 
   protected allObstacles: Array<TubePair> = []
 
@@ -66,7 +66,7 @@ export default class Game extends Phaser.Scene {
   }
 
   public update (time: number, delta: number) {
-    this.moveBackground()
+    this.moveGround()
     this.wrapObstacleAndLootBox()
   }
 
@@ -83,36 +83,40 @@ export default class Game extends Phaser.Scene {
 
   protected setCamera () {
     const { width, height } = this.scale
-    this.cameraCenter = this.add.rectangle(width * 0.3, height / 2, 10, 10, 0xffffff)
+    this.cameraCenter = this.add.rectangle(width * 0.3, height / 2, 10, 10, 0xffffff, 0)
     this.physics.add.existing(this.cameraCenter)
     const centerBody = this.cameraCenter.body as Phaser.Physics.Arcade.Body
     centerBody.setGravityX(NumberSettings.GravityX)
     centerBody.setVelocityX(NumberSettings.InitialXVelocity)
     this.cameras.main.startFollow(this.cameraCenter, false, 1, 1)
     this.cameras.main.setBounds(0, 0, Number.MAX_SAFE_INTEGER, height)
-
-    console.log(this.cameras.main)
   }
 
   protected setBorder () {
-    const { height } = this.scale
+    const { width, height } = this.scale
 
-    this.add.rectangle(0, 0, Number.MAX_SAFE_INTEGER, NumberSettings.BorderHeight, 0x00ff00, 0.5).setOrigin(0, 0)
-    this.add.rectangle(0, height - NumberSettings.BorderHeight, Number.MAX_SAFE_INTEGER, NumberSettings.BorderHeight, 0x00ff00, 0.5).setOrigin(0, 0)
+    this.top = this.add.tileSprite(0, 0, width, NumberSettings.BorderHeight, Texture.Background.Top)
+      .setOrigin(0, 0)
+      .setScrollFactor(0, 0)
+
+    this.ground = this.add.tileSprite(0, height - NumberSettings.BorderHeight, width, NumberSettings.BorderHeight, Texture.Background.Ground)
+      .setOrigin(0, 0)
+      .setScrollFactor(0, 0)
   }
 
   protected setBackground () {
     const { width, height } = this.scale
 
-    this.sky = this.add.tileSprite(0, 0, width, height, Texture.Background.Sky).setOrigin(0, 0).setScrollFactor(0, 0)
-    this.midBackground = this.add.tileSprite(0, 0, width, height, Texture.Background.Midground).setOrigin(0, 0).setScrollFactor(0, 0)
-    this.foreBackground = this.add.tileSprite(0, height - 88, width, height, Texture.Background.Foreground).setOrigin(0, 0).setScrollFactor(0, 0)
+    this.sky = this.add.tileSprite(0, 0, width, height, Texture.Background.Background)
+      .setOrigin(0, 0)
+      .setScrollFactor(0, 0)
   }
 
-  protected moveBackground () {
-    this.sky.setTilePosition(this.cameras.main.scrollX * 0.4)
-    this.midBackground.setTilePosition(this.cameras.main.scrollX * 0.8)
-    this.foreBackground.setTilePosition(this.cameras.main.scrollX * 1.2)
+  protected moveGround () {
+    const { scrollX } = this.cameras.main
+    this.sky.setTilePosition(scrollX * 0.4)
+    this.top.setTilePosition(scrollX)
+    this.ground.setTilePosition(scrollX)
   }
 
   protected wrapObstacleAndLootBox () {
@@ -185,8 +189,8 @@ export default class Game extends Phaser.Scene {
 
     return {
       id: idGenerator.next().value as number,
-      upper: new Tube(this, x, Math.max(offset - TubeSpaceBetween / 2 - TubeHeight, 15 - TubeHeight), 'upper'),
-      lower: new Tube(this, x, Math.min(offset + TubeSpaceBetween / 2, height - 15), 'lower'),
+      upper: new Tube(this, x, NumberSettings.BorderHeight - 15, 'upper'),
+      lower: new Tube(this, x, height - NumberSettings.BorderHeight + 5, 'lower'),
       offset
     }
   }
