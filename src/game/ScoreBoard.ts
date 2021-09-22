@@ -38,7 +38,7 @@ export default class ScoreBoard extends Phaser.GameObjects.Container {
       buffListEl.firstChild.remove()
     }
 
-    this.gameScene.playerFront.getBuffList()
+    this.gameScene.players[0].getBuffList()
       .forEach(({ buff, expire, level }) => {
         const buffItem = document.createElement('li')
         buffItem.classList.add('item')

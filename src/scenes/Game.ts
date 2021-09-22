@@ -2,12 +2,10 @@ import Phaser from 'phaser'
 import Texture from '@/constants/texture'
 import Scenes from '@/constants/scenes'
 import Player from '@/game/Player'
-import NormalGameObject from '@/game/NormalGameObject'
 import NumberSettings from '@/constants/number-settings'
-import PlayerProperty from '@/constants/player-properties'
 import LootBox from '@/game/LootBox'
 import Tube from '@/game/Tube'
-import { getRandomInArray, getRandomNumber } from '@/shared/random'
+import { getRandomNumber } from '@/shared/random'
 import ScoreBoard from '@/game/ScoreBoard'
 import TubeSpaceBetween = NumberSettings.TubeSpaceBetween
 import TubeHeight = NumberSettings.TubeHeight
@@ -27,10 +25,7 @@ const idGenerator = (function * () {
 })()
 
 export default class Game extends Phaser.Scene {
-  playerBehind!: Player
-  playerFront!: Player
-
-  protected ghostPlayer: Player | null = null
+  players: Array<Player> = []
 
   protected sky!: Phaser.GameObjects.TileSprite
   protected midBackground!: Phaser.GameObjects.TileSprite
@@ -48,10 +43,9 @@ export default class Game extends Phaser.Scene {
     lower: null
   }
 
-  // protected scoreBoard!: Phaser.GameObjects.DOMElement
   protected scoreBoard!: ScoreBoard
-
   protected cameraCenter!: Phaser.GameObjects.Rectangle
+  protected emitter = new Phaser.Events.EventEmitter()
 
   constructor () {
     super(Scenes.GAME)
@@ -63,8 +57,9 @@ export default class Game extends Phaser.Scene {
     this.setBackground()
     this.setBorder()
     this.physics.world.setBounds(0, NumberSettings.BorderHeight, Number.MAX_SAFE_INTEGER, height - NumberSettings.BorderHeight * 2)
-    // this.setPlayerBehind()
-    this.setPlayerFront()
+    this.setPlayer(width * 0.2, height * 0.4, 'blue', 'keydown-S', 'left-control')
+    this.setPlayer(width * 0.6, height * 0.3, 'red', 'keydown-K', 'right-control')
+
     this.setObstacle(width - NumberSettings.CameraOffsetX - NumberSettings.ObstacleInterval)
     this.setScoreBoard()
     this.setCamera()
@@ -75,31 +70,16 @@ export default class Game extends Phaser.Scene {
     this.wrapObstacleAndLootBox()
   }
 
-  protected setPlayerBehind () {
-    const { width, height } = this.scale
+  protected setPlayer (x: number, y: number, type: 'blue' | 'red', keyboard: string, control: string) {
+    const player = new Player(this, x, y, type, this.players, this.emitter)
+    player.setControl(keyboard, control)
+    this.add.existing(player)
 
-    this.playerBehind = new Player(this, width * 0.2, height * 0.3, 'blue')
-    this.add.existing(this.playerBehind)
-
-    this.playerBehind.setControl('keydown-S', 'left-control')
+    this.players.forEach(otherPlayer => {
+      this.physics.add.overlap(player, otherPlayer, this.handleOverlap.bind(this), undefined, this)
+    })
+    this.players.push(player)
   }
-
-  protected setPlayerFront () {
-    const { width, height } = this.scale
-
-    this.playerFront = new Player(this, width * 0.6, height * 0.3, 'red')
-    this.add.existing(this.playerFront)
-
-    this.playerFront.setControl('keydown-K', 'right-control')
-  }
-
-  // protected unsetControl () {
-  //   this.input.keyboard.off('keydown-S', this.playerBehind.jump.bind(this.playerBehind))
-  //   this.input.keyboard.off('keydown-K', this.playerFront.jump.bind(this.playerFront))
-  //
-  //   document.getElementById('left-control')?.removeEventListener('click', this.playerBehind.jump.bind(this.playerBehind))
-  //   document.getElementById('right-control')?.removeEventListener('click', this.playerFront.jump.bind(this.playerFront))
-  // }
 
   protected setCamera () {
     const { width, height } = this.scale
@@ -191,8 +171,9 @@ export default class Game extends Phaser.Scene {
       this.physics.add.overlap(obstaclePair.lower, object, this.handleOverlap.bind(this), undefined, this)
     }
 
-    addOverlap(this.playerFront)
-    addOverlap(this.playerBehind)
+    this.players.forEach(player => {
+      addOverlap(player)
+    })
 
     this.allObstacles.push(obstaclePair)
   }
@@ -212,43 +193,7 @@ export default class Game extends Phaser.Scene {
 
   protected handleOverlap (object1: Phaser.GameObjects.GameObject, object2: Phaser.GameObjects.GameObject) {
     const player = object2 as Player
-
-    if (player.objectState === PlayerProperty.State.Dead) return
-
-    let buff: PlayerProperty.Buff
-
-    const tube = object1 as Tube
-    const box = object1 as LootBox
-
-    switch ((object1 as NormalGameObject).texture) {
-      case Texture.Object.Tube:
-
-        if (tube.effective) {
-          if (this.ghostPlayer && this.ghostPlayer !== player) {
-            // this.playerBehind.dead()
-            this.playerFront.dead()
-          }
-          this.ghostPlayer = player
-          player.ghost(object1 as Tube)
-        }
-
-        break
-      case Texture.Charactor.Husky:
-        if (player.objectState === PlayerProperty.State.Ghost) return
-        buff = this.buffLoot()
-        player.setBuff(buff)
-
-        box.handleOverlapped()
-        break
-      default:
-        break
-    }
-  }
-
-  protected buffLoot (): PlayerProperty.Buff {
-    // return 2
-    const buffArray = Object.values(PlayerProperty.Buff).filter(item => typeof item === 'number')
-    return getRandomInArray(buffArray) as PlayerProperty.Buff
+    player.handleOverlap(object1)
   }
 
   protected setLootBox (x: number) {
@@ -274,8 +219,9 @@ export default class Game extends Phaser.Scene {
       this.add.existing(this.lootBox.middle)
       this.add.existing(this.lootBox.lower)
 
-      addOverlap(this.playerFront)
-      addOverlap(this.playerBehind)
+      this.players.forEach(player => {
+        addOverlap(player)
+      })
     }
   }
 

@@ -7,7 +7,10 @@ import Scenes from '@/constants/scenes'
 import Tube from '@/game/Tube'
 import Animates from '@/constants/animates'
 import InitialXVelocity = NumberSettings.InitialXVelocity
-import KeyboardPlugin = Phaser.Input.Keyboard.KeyboardPlugin
+import NormalGameObject from '@/game/NormalGameObject'
+import LootBox from '@/game/LootBox'
+import { getRandomInArray } from '@/shared/random'
+import GameEvent from '@/constants/events'
 
 type BuffPack = {
   buff: PlayerProperty.Buff
@@ -29,15 +32,20 @@ export default class Player extends Phaser.GameObjects.Container {
 
   private buff: Array<BuffPack> = []
 
+  protected players: Array<Player> = []
+
   protected object!: Phaser.GameObjects.Sprite
   protected effect!: Phaser.GameObjects.Sprite
   protected objectBody!: Phaser.Physics.Arcade.Body
 
   protected bindJump!: () => void
-  protected ghostCountdown!: number
 
   protected controlKey!: string
   protected controlEl!: string
+
+  protected endTime = -1
+  protected emitter!: Phaser.Events.EventEmitter
+  protected texture!: Texture.Charactor
 
   private jumpVelocity = NumberSettings.GoUpVelocity
 
@@ -52,13 +60,17 @@ export default class Player extends Phaser.GameObjects.Container {
     this.objectBody.setGravityY(value)
   }
 
-  constructor (scene: Phaser.Scene, x: number, y: number, type: 'red' | 'blue') {
+  constructor (scene: Phaser.Scene, x: number, y: number, type: 'red' | 'blue', playerList: Array<Player>, emitter: Phaser.Events.EventEmitter) {
     super(scene, x, y)
+
+    this.players = playerList
+    this.emitter = emitter
+    this.texture = type === 'red' ? Texture.Charactor.RedBird : Texture.Charactor.BlurBird
 
     this.object = scene.add
       .sprite(0,
         0,
-        type === 'red' ? Texture.Charactor.RedBird : Texture.Charactor.BlurBird,
+        this.texture,
         'frame_01.png ')
       .setOrigin(0, 0)
       .setFlipX(true)
@@ -82,9 +94,8 @@ export default class Player extends Phaser.GameObjects.Container {
     this.objectGravityY = NumberSettings.GravityY
 
     this.bindJump = this.jump.bind(this)
-    // this.setBuff(PlayerProperty.Buff.IMMORTAL)
 
-    // setTimeout(() => this.playEffect(Animates.Effects.Example), 2000)
+    this.emitter.on(GameEvent.GameOver, () => this.dead())
   }
 
   preUpdate () {
@@ -95,8 +106,11 @@ export default class Player extends Phaser.GameObjects.Container {
       return
     }
 
+    if (this.endTime > 0 && this.endTime <= Date.now()) {
+      this.emitter.emit(GameEvent.GameOver)
+    }
+
     const { scrollX: leftEdge } = this.scene.cameras.main
-    // const leftEdge = scrollX
     const rightEdge = leftEdge + this.scene.scale.width
     // 对比位置
     const { width, x, y } = this
@@ -106,7 +120,11 @@ export default class Player extends Phaser.GameObjects.Container {
         break
       case PlayerProperty.State.Alive:
         if (this.objectBody.blocked.down || this.objectBody.blocked.up) {
-          this.ghost()
+          if (this.isOtherAlive()) {
+            this.ghost()
+          } else {
+            this.emitter.emit(GameEvent.GameOver)
+          }
         }
         break
       case PlayerProperty.State.Ghost:
@@ -122,17 +140,89 @@ export default class Player extends Phaser.GameObjects.Container {
     this.controlKey = key
     this.controlEl = controlElID
 
-    const ckey = this.scene.input.keyboard.on(key, this.jump.bind(this))
-    console.log(ckey)
-    document.getElementById(controlElID)?.addEventListener('click', this.jump.bind(this))
+    this.scene.input.keyboard.on(key, this.bindJump)
+    document.getElementById(controlElID)?.addEventListener('click', this.bindJump)
   }
 
   unsetControl () {
-    this.scene.input.keyboard.off(this.controlKey, this.jump.bind(this))
-    document.getElementById(this.controlEl)?.removeEventListener('click', this.jump.bind(this))
+    this.scene.input.keyboard.off(this.controlKey)
+    document.getElementById(this.controlEl)?.removeEventListener('click', this.bindJump)
   }
 
-  setBuff (buff: PlayerProperty.Buff) {
+  handleOverlap (object: Phaser.GameObjects.GameObject) {
+    if (this.objectState === PlayerProperty.State.Dead) return
+
+    const tube = object as Tube
+    const box = object as LootBox
+    const player = object as Player
+
+    switch ((object as NormalGameObject).texture) {
+      case Texture.Object.Tube:
+
+        if (!tube.effective) return
+
+        switch (this.objectState) {
+          case PlayerProperty.State.Alive:
+            if (this.isOtherAlive()) {
+              this.ghost(tube)
+            } else {
+              this.emitter.emit(GameEvent.GameOver)
+            }
+
+            break
+          case PlayerProperty.State.Immortal:
+            tube.handleImpact()
+            break
+          case PlayerProperty.State.Ghost:
+            if (this.endTime > Date.now()) {
+              tube.handleImpact()
+            } else {
+              this.emitter.emit(GameEvent.GameOver)
+            }
+        }
+
+        break
+      case Texture.Charactor.Husky:
+        if (this.objectState === PlayerProperty.State.Ghost) return
+        this.setBuff(this.buffLoot())
+
+        box.handleOverlapped()
+        break
+      case Texture.Charactor.BlurBird:
+      case Texture.Charactor.RedBird:
+        this.reborn()
+        player.reborn()
+        break
+      default:
+        break
+    }
+  }
+
+  protected isOtherAlive () {
+    return this.players.filter(player => player !== this).every(player => player.objectState === PlayerProperty.State.Alive)
+  }
+
+  protected buffLoot (): PlayerProperty.Buff {
+    // return 2
+    const buffArray = Object.values(PlayerProperty.Buff).filter(item => typeof item === 'number')
+    return getRandomInArray(buffArray) as PlayerProperty.Buff
+  }
+
+  protected reborn () {
+    if (this.objectState !== PlayerProperty.State.Ghost) return
+    this.objectState = PlayerProperty.State.Alive
+    this.endTime = -1
+
+    this.objectBody.setVelocity(this.objectBody.velocity.x / 4)
+    this.objectBody.setAcceleration(0, 0)
+    this.objectBody.setGravityX(NumberSettings.GravityX)
+    this.objectGravityY = NumberSettings.GravityY
+    this.objectBody.setBounceY(0)
+    this.object.setAlpha(1)
+    this.setControl(this.controlKey, this.controlEl)
+  }
+
+  protected setBuff (buff: PlayerProperty.Buff) {
     const createBuffPack = (): BuffPack => {
       return {
         buff,
@@ -247,10 +337,6 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   dead (tube?: Tube, ignoreImmortal = false) {
-    if (this.objectState === PlayerProperty.State.Immortal && !ignoreImmortal) {
-      tube?.handleImpact()
-      return
-    }
     this.unsetControl()
     this.object.stop()
     this.objectBody.setGravity(0, 0)
@@ -262,19 +348,15 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   ghost (tube?: Tube) {
-    if (this.objectState === PlayerProperty.State.Ghost) {
-      tube?.handleImpact()
-      return
-    }
-
     this.unsetControl()
 
     this.objectState = PlayerProperty.State.Ghost
 
-    this.objectBody.setVelocity(this.objectBody.velocity.x * 2)
+    this.objectBody.setVelocity(this.objectBody.velocity.x * 4)
     this.objectBody.setAcceleration(0, 0)
     this.objectBody.setBounceY(1)
-    this.ghostCountdown = window.setTimeout(() => this.dead(), 10000)
+    this.object.setAlpha(0.5)
+    this.endTime = Date.now() + 10 * 1000
   }
 
   jump () {
