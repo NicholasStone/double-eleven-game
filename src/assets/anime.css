@@ -1,0 +1,30 @@
+@keyframes blur-appear {
+  from {
+    backdrop-filter: blur(0);
+    opacity: 0;
+  }
+
+  to {
+    backdrop-filter: blur(10px);
+    opacity: 1;
+  }
+}
+
+
+@keyframes zoom-appear {
+  form {
+    transform: scale(0.7);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+.blur-appear {
+  animation: blur-appear 0.5s ease;
+}
+
+.zoom-appear {
+  animation: zoom-appear 0.5s ease-out 0.5s;
+}

@@ -36,6 +36,7 @@ export default class Player extends Phaser.GameObjects.Container implements IObj
   private buff: Array<BuffPack> = []
 
   protected players: Array<Player> = []
+  protected ghostTime = 0
 
   protected object!: Phaser.GameObjects.Sprite
   protected effect!: Phaser.GameObjects.Sprite
@@ -52,18 +53,18 @@ export default class Player extends Phaser.GameObjects.Container implements IObj
 
   private jumpVelocity = NumberSettings.GoUpVelocity
 
-  get objectGravityY (): number {
+  get objectGravityY(): number {
     return this._objectGravityY
   }
 
-  set objectGravityY (value: number) {
+  set objectGravityY(value: number) {
     if (this._objectGravityY === value) return
 
     this._objectGravityY = value
     this.objectBody.setGravityY(value)
   }
 
-  constructor (scene: Phaser.Scene, x: number, y: number, type: 'red' | 'blue', playerList: Array<Player>, emitter: Phaser.Events.EventEmitter) {
+  constructor(scene: Phaser.Scene, x: number, y: number, type: 'red' | 'blue', playerList: Array<Player>, emitter: Phaser.Events.EventEmitter) {
     super(scene, x, y)
 
     this.players = playerList
@@ -101,7 +102,7 @@ export default class Player extends Phaser.GameObjects.Container implements IObj
     this.emitter.on(GameEvent.GameOver, () => this.dead())
   }
 
-  preUpdate () {
+  preUpdate() {
     if (this.scene.scene.isActive(Scenes.GAMEOVER)) {
       if (this.objectState !== PlayerProperty.State.Dead) {
         this.dead()
@@ -139,7 +140,7 @@ export default class Player extends Phaser.GameObjects.Container implements IObj
     }
   }
 
-  setControl (key: string, controlElID: string) {
+  setControl(key: string, controlElID: string) {
     this.controlKey = key
     this.controlEl = controlElID
 
@@ -147,12 +148,12 @@ export default class Player extends Phaser.GameObjects.Container implements IObj
     document.getElementById(controlElID)?.addEventListener('click', this.bindJump)
   }
 
-  unsetControl () {
+  unsetControl() {
     this.scene.input.keyboard.off(this.controlKey)
     document.getElementById(this.controlEl)?.removeEventListener('click', this.bindJump)
   }
 
-  handleOverlap (object: Phaser.GameObjects.GameObject) {
+  handleOverlap(object: Phaser.GameObjects.GameObject) {
     if (this.objectState === PlayerProperty.State.Dead) return
 
     const tube = object as Tube
@@ -200,17 +201,17 @@ export default class Player extends Phaser.GameObjects.Container implements IObj
     }
   }
 
-  protected isOtherAlive () {
+  protected isOtherAlive() {
     return this.players.filter(player => player !== this).every(player => player.objectState === PlayerProperty.State.Alive)
   }
 
-  protected buffLoot (): PlayerProperty.Buff {
+  protected buffLoot(): PlayerProperty.Buff {
     // return 2
     const buffArray = Object.values(PlayerProperty.Buff).filter(item => typeof item === 'number')
     return getRandomInArray(buffArray) as PlayerProperty.Buff
   }
 
-  protected reborn () {
+  protected reborn() {
     if (this.objectState !== PlayerProperty.State.Ghost) return
     this.objectState = PlayerProperty.State.Alive
     this.endTime = -1
@@ -224,7 +225,7 @@ export default class Player extends Phaser.GameObjects.Container implements IObj
     this.setControl(this.controlKey, this.controlEl)
   }
 
-  protected setBuff (buff: PlayerProperty.Buff) {
+  protected setBuff(buff: PlayerProperty.Buff) {
     const createBuffPack = (): BuffPack => {
       return {
         buff,
@@ -316,7 +317,7 @@ export default class Player extends Phaser.GameObjects.Container implements IObj
     }
   }
 
-  getBuffList () {
+  getBuffList() {
     if (this.buff.length) {
       return this.buff
         .map(({ buff, expire, level }) => ({ buff, expire, level }))
@@ -329,7 +330,7 @@ export default class Player extends Phaser.GameObjects.Container implements IObj
     }
   }
 
-  playEffect (effect: Animates.Effects) {
+  playEffect(effect: Animates.Effects) {
     this.effect
       .setVisible(true)
       .play(effect)
@@ -338,7 +339,7 @@ export default class Player extends Phaser.GameObjects.Container implements IObj
       })
   }
 
-  dead (tube?: Tube, ignoreImmortal = false) {
+  dead(tube?: Tube, ignoreImmortal = false) {
     this.unsetControl()
     this.object.stop()
     this.objectBody.setGravity(0, 0)
@@ -349,7 +350,7 @@ export default class Player extends Phaser.GameObjects.Container implements IObj
     this.scene.scene.start(Scenes.GAMEOVER)
   }
 
-  ghost (tube?: Tube) {
+  ghost(tube?: Tube) {
     this.unsetControl()
 
     this.objectState = PlayerProperty.State.Ghost
@@ -359,9 +360,10 @@ export default class Player extends Phaser.GameObjects.Container implements IObj
     this.objectBody.setBounceY(1)
     this.object.setAlpha(0.5)
     this.endTime = Date.now() + 10 * 1000
+    this.ghostTime++
   }
 
-  jump () {
+  jump() {
     if (this.objectState === PlayerProperty.State.Dead ||
       this.scene.scene.isActive(Scenes.GAMEOVER)) return
 

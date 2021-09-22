@@ -5,6 +5,8 @@ import Game from '@/scenes/Game'
 import GameOver from '@/scenes/GameOver'
 import NumberSettings from '@/constants/number-settings'
 import '@/assets/index.css'
+import '@/assets/panel.css'
+import '@/assets/anime.css'
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,

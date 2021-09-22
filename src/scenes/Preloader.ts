@@ -4,11 +4,11 @@ import Scenes from '@/constants/scenes'
 import Animates from '@/constants/animates'
 
 export default class Preloader extends Phaser.Scene {
-  constructor () {
+  constructor() {
     super(Scenes.PRELOADER)
   }
 
-  public preload () {
+  public preload() {
     this.loadBackground()
 
     this.load.image(Texture.Image.Wasted, 'assets/images/wasted.png')
@@ -17,10 +17,12 @@ export default class Preloader extends Phaser.Scene {
     this.load.image(Texture.Object.Top2, 'assets/object/top-2.png')
     this.load.image(Texture.Object.Top3, 'assets/object/top-3.png')
     this.load.image(Texture.Object.Top4, 'assets/object/top-4.png')
+    this.load.image(Texture.Object.Ground1, 'assets/object/ground1.png')
+    this.load.image(Texture.Object.Ground2, 'assets/object/ground2.png')
+    this.load.image(Texture.Object.Ground3, 'assets/object/ground3.png')
+    this.load.image(Texture.Object.Ground4, 'assets/object/ground4.png')
 
     this.load.image(Texture.Charactor.Husky, 'assets/characters/husky.png')
-    // this.load.image(Texture.Charactor.Samoyed, 'assets/characters/samoyed.png')
-    // this.load.image(Texture.Charactor.Akita, 'assets/characters/akita.png')
 
     this.load.atlas(Texture.Charactor.BlurBird, 'assets/characters/blue-bird.png', 'assets/characters/blue-bird.json')
     this.load.atlas(Texture.Charactor.RedBird, 'assets/characters/red-bird.png', 'assets/characters/red-bird.json')
@@ -29,7 +31,7 @@ export default class Preloader extends Phaser.Scene {
     this.load.atlas(Texture.Effects.Buff2, 'assets/effects/buff-2.png', 'assets/effects/buff-2.json')
   }
 
-  public create () {
+  public create() {
     this.anims.create({
       key: Animates.RedBirdFly,
       frames: Texture.Charactor.RedBird,
@@ -61,7 +63,7 @@ export default class Preloader extends Phaser.Scene {
     this.scene.start(Scenes.READY)
   }
 
-  protected loadBackground () {
+  protected loadBackground() {
     this.load.image(Texture.Background.Background, 'assets/background/background.png')
     this.load.image(Texture.Background.Top, 'assets/background/top.png')
     this.load.image(Texture.Background.Ground, 'assets/background/ground.png')
