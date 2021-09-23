@@ -15,34 +15,6 @@
 </head>
 <body>
 <div id="app">
-  <div class="login-mask" style="display: none;">
-    <form class="login-form">
-      <h2 class="form-title">请输入玩家名称</h2>
-      <div class="input-control">
-        <label>Player 1: 
-          <input type="text"/>
-        </label>
-      </div>
-      <div class="input-control">
-        <label>Player 2: 
-          <input type="text"/>
-        </label>
-      </div>
-      <div>
-        <button class="form-btn">确认</button>
-        <button class="form-btn" type="reset">重置</button>
-      </div>
-    </form>
-  </div>
-  <div class="rank-mask blur-appear">
-    <ol class="rank-list zoom-appear">
-      <li class="rank-item">
-        <span class="player-1">Player1</span>
-        <span class="player-2">Player2</span>
-        <span class="score">21</span>
-      </li>
-    </ul> 
-  </div>
   <div class="score-board hidden" id="hud">
     <div class="item-name">得分:</div>
     <div class="item-desc score" id="hud-score">0</div>
@@ -55,6 +27,37 @@
   <div class="control">
     <div class="control-item left" id="left-control"></div>
     <div class="control-item right" id="right-control"></div>
+  </div>
+  <div class="login-mask hidden" id="login-mask">
+    <form class="login-form" id="login-form">
+      <h2 class="form-title">请输入玩家名称</h2>
+      <div class="input-control">
+        <label>Player 1:
+          <input type="text" name="player1" id="input-player-1"/>
+        </label>
+      </div>
+      <div class="input-control">
+        <label>Player 2:
+          <input type="text" name="player2" id="input-player-2"/>
+        </label>
+      </div>
+      <div class="hidden" id="error-hint">
+        <p>请完整填写玩家民称</p>
+      </div>
+      <div>
+        <button class="form-btn" id="submit-btn">确认</button>
+        <button class="form-btn" type="reset">重置</button>
+      </div>
+    </form>
+  </div>
+  <div class="rank-mask blur-appear">
+    <ol class="rank-list zoom-appear">
+      <li class="rank-item">
+        <span class="player-1">Player1</span>
+        <span class="player-2">Player2</span>
+        <span class="score">21</span>
+      </li>
+    </ol>
   </div>
 </div>
 </body>

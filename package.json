@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": "true",
   "scripts": {
-    "serve": "npx webpack server --config build/webpack.config.js",
+    "serve:game": "npx webpack server --config build/webpack.config.js",
+    "serve:server": "tsc -p server/ -w",
+    "start:server": "node server-dist/index.js",
     "build:game": "npx rimraf dist && npx cross-env NODE_ENV=production && npx webpack --config build/webpack.config.js",
     "build:server": "npx rimraf server-dist && npx cross-env NODE_ENV=production && tsc -p server/ "
   },
