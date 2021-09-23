@@ -9,8 +9,8 @@ html, body {
 
 #app {
 	position: relative;
-	max-width: 1024px;
-	max-height: 576px;
+	min-width: 1024px;
+	min-height: 576px;
 	width: auto;
 	height: auto;
 }

@@ -4,6 +4,7 @@ import Ready from '@/scenes/Ready'
 import Game from '@/scenes/Game'
 import GameOver from '@/scenes/GameOver'
 import NumberSettings from '@/constants/number-settings'
+import login from '@/panels/login'
 import '@/assets/index.css'
 import '@/assets/panel.css'
 import '@/assets/anime.css'
@@ -22,4 +23,10 @@ const config: Phaser.Types.Core.GameConfig = {
   scene: [Preloader, Ready, Game, GameOver]
 }
 
-export default new Phaser.Game(config)
+const game = new Phaser.Game(config)
+
+// let game = null
+//
+// login().then(() => {
+//   game = new Phaser.Game(config)
+// })

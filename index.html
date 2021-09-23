@@ -15,14 +15,23 @@
 </head>
 <body>
 <div id="app">
-  <div class="score-board hidden" id="hud">
-    <div class="item-name">得分:</div>
-    <div class="item-desc score" id="hud-score">0</div>
+  <div class="score-board hidden" id="hud-player-1">
     <div class="item-name">状态:</div>
-    <div class="item-desc buff" id="hud-buff">
-      <ul class="buff-list">
+    <div class="item-desc buff">
+      <ul class="buff-list" id="hud-buff-1">
       </ul>
     </div>
+  </div>
+  <div class="score-board hidden" style="right: 0" id="hud-player-2">
+    <div class="item-name">状态:</div>
+    <div class="item-desc buff">
+      <ul class="buff-list" id="hud-buff-2">
+      </ul>
+    </div>
+  </div>
+  <div class="score-board hidden" style="margin: 0 auto; left: 0; right: 0" id="hud">
+    <div class="item-name">得分:</div>
+    <div class="item-desc score" id="hud-score">0</div>
   </div>
   <div class="control">
     <div class="control-item left" id="left-control"></div>
@@ -50,7 +59,7 @@
       </div>
     </form>
   </div>
-  <div class="rank-mask blur-appear">
+  <div class="rank-mask blur-appear hidden">
     <ol class="rank-list zoom-appear">
       <li class="rank-item">
         <span class="player-1">Player1</span>

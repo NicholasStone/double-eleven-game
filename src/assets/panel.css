@@ -63,7 +63,7 @@
 
 .rank-mask,
 .login-mask {
-	position: fixed;
+	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -71,7 +71,7 @@
 
 	background-color: #000000aa;
 	backdrop-filter: blur(10px);
-	
+
 	display: flex;
 	align-items: center;
 	justify-content: center;
