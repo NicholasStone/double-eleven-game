@@ -23,10 +23,8 @@ const config: Phaser.Types.Core.GameConfig = {
   scene: [Preloader, Ready, Game, GameOver]
 }
 
-const game = new Phaser.Game(config)
+// const game = new Phaser.Game(config)
 
-// let game = null
-//
-// login().then(() => {
-//   game = new Phaser.Game(config)
-// })
+login().then(() => {
+  const game = new Phaser.Game(config)
+})

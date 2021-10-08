@@ -65,7 +65,7 @@ export default class Game extends Phaser.Scene {
     this.setScoreBoard()
     this.setCamera()
 
-    this.emitter.on(GameEvent.GameOver, () => this.stopCamera())
+    this.emitter.on(GameEvent.GameOver, () => this.gameOver())
   }
 
   public update (time: number, delta: number) {
@@ -242,5 +242,10 @@ export default class Game extends Phaser.Scene {
     this.scoreBoard = new ScoreBoard(this, 500, 15)
     this.scoreBoard.setPosition(0, 0)
     this.add.existing(this.scoreBoard)
+  }
+
+  protected gameOver () {
+    this.stopCamera()
+    this.scene.run(Scenes.GAMEOVER)
   }
 }

@@ -16,6 +16,7 @@ specifiers:
   '@types/validator': ^13.6.3
   '@typescript-eslint/eslint-plugin': ^4.24.0
   '@typescript-eslint/parser': ^4.24.0
+  axios: ^0.22.0
   babel-core: ^6.26.3
   babel-loader: '7'
   compression-webpack-plugin: ^7.1.2
@@ -31,6 +32,7 @@ specifiers:
   file-loader: ^6.2.0
   html-webpack-plugin: ^5.3.1
   js-sha256: ^0.9.0
+  jsencrypt: ^3.2.1
   koa: ^2.13.0
   koa-bodyparser: ^4.3.0
   koa-json: ^2.0.2
@@ -58,7 +60,9 @@ specifiers:
 dependencies:
   '@koa/router': registry.nlark.com/@koa/router/10.1.0
   '@types/lodash': registry.nlark.com/@types/lodash/4.14.171
+  axios: registry.npmmirror.com/axios/0.22.0
   js-sha256: registry.nlark.com/js-sha256/0.9.0
+  jsencrypt: registry.npmmirror.com/jsencrypt/3.2.1
   koa: 2.13.1
   koa-bodyparser: registry.nlark.com/koa-bodyparser/4.3.0
   koa-json: registry.nlark.com/koa-json/2.0.2
@@ -68,7 +72,7 @@ dependencies:
   mysql2: registry.nlark.com/mysql2/2.3.0
   node-rsa: registry.nlark.com/node-rsa/1.1.1
   phaser: registry.nlark.com/phaser/3.54.0
-  sequelize: registry.nlark.com/sequelize/6.6.5
+  sequelize: registry.nlark.com/sequelize/6.6.5_mysql2@2.3.0+sqlite3@5.0.2
   sqlite3: registry.nlark.com/sqlite3/5.0.2
 
 devDependencies:
@@ -1353,7 +1357,7 @@ packages:
       readdirp: 2.2.1
       upath: 1.2.0
     optionalDependencies:
-      fsevents: 1.2.13
+      fsevents: registry.nlark.com/fsevents/1.2.13
     dev: true
 
   /chownr/1.1.4:
@@ -2491,18 +2495,6 @@ packages:
   /fs.realpath/1.0.0:
     resolution: {integrity: sha1-FQStJSMVjKpA20onh8sBQRmU6k8=, tarball: fs.realpath/download/fs.realpath-1.0.0.tgz}
 
-  /fsevents/1.2.13:
-    resolution: {integrity: sha1-8yXLBFVZJCi88Rs4M3DvcOO/zDg=, tarball: fsevents/download/fsevents-1.2.13.tgz}
-    engines: {node: '>= 4.0'}
-    os: [darwin]
-    deprecated: fsevents 1 will break on node v14+ and could be using insecure binaries. Upgrade to fsevents 2.
-    requiresBuild: true
-    dependencies:
-      bindings: 1.5.0
-      nan: 2.14.2
-    dev: true
-    optional: true
-
   /fstream/1.0.12:
     resolution: {integrity: sha1-Touo7i1Ivk99DeUFRVVI6uWTIEU=, tarball: fstream/download/fstream-1.0.12.tgz}
     engines: {node: '>=0.6'}
@@ -3341,6 +3333,8 @@ packages:
       debug: registry.nlark.com/debug/4.3.1
       http-errors: 1.7.3
       resolve-path: 1.4.0
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /koa/2.13.1:
@@ -6443,6 +6437,8 @@ packages:
       koa-compose: 4.1.0
       methods: 1.1.2
       path-to-regexp: 6.2.0
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   registry.nlark.com/@nodelib/fs.scandir/2.1.5:
@@ -7263,6 +7259,11 @@ packages:
     name: debug
     version: 4.3.1
     engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
     dependencies:
       ms: registry.nlark.com/ms/2.1.2
     dev: false
@@ -7487,6 +7488,26 @@ packages:
     dependencies:
       debug: 4.3.1_supports-color@6.1.0
     dev: true
+
+  registry.nlark.com/follow-redirects/1.14.4:
+    resolution: {integrity: sha1-g4/fSKi73XnlLuUfsclOPtmLk3k=, registry: https://registry.npm.taobao.org/, tarball: https://registry.nlark.com/follow-redirects/download/follow-redirects-1.14.4.tgz}
+    name: follow-redirects
+    version: 1.14.4
+    engines: {node: '>=4.0'}
+    dev: false
+
+  registry.nlark.com/fsevents/1.2.13:
+    resolution: {integrity: sha1-8yXLBFVZJCi88Rs4M3DvcOO/zDg=, registry: https://registry.npm.taobao.org/, tarball: https://registry.nlark.com/fsevents/download/fsevents-1.2.13.tgz}
+    name: fsevents
+    version: 1.2.13
+    engines: {node: '>= 4.0'}
+    deprecated: fsevents 1 will break on node v14+ and could be using insecure binaries. Upgrade to fsevents 2.
+    requiresBuild: true
+    dependencies:
+      bindings: 1.5.0
+      nan: 2.14.2
+    dev: true
+    optional: true
 
   registry.nlark.com/gauge/2.7.4:
     resolution: {integrity: sha1-LANAXHU4w51+s3sxcCLjJfsBi/c=, registry: https://registry.npm.taobao.org/, tarball: https://registry.nlark.com/gauge/download/gauge-2.7.4.tgz}
@@ -7894,6 +7915,8 @@ packages:
       mz: 2.7.0
       pretty: registry.nlark.com/pretty/2.0.0
       resolve-path: 1.4.0
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   registry.nlark.com/long/4.0.0:
@@ -7997,6 +8020,7 @@ packages:
     version: 3.8.0
     engines: {node: '>= 0.8.0'}
     hasBin: true
+    requiresBuild: true
     dependencies:
       fstream: 1.0.12
       glob: registry.nlark.com/glob/7.1.7
@@ -8280,11 +8304,32 @@ packages:
     engines: {node: '>= 10.0.0'}
     dev: false
 
-  registry.nlark.com/sequelize/6.6.5:
+  registry.nlark.com/sequelize/6.6.5_mysql2@2.3.0+sqlite3@5.0.2:
     resolution: {integrity: sha1-b2GOmfPfH8gfKHCeijE5zsPvHww=, registry: https://registry.npm.taobao.org/, tarball: https://registry.nlark.com/sequelize/download/sequelize-6.6.5.tgz}
+    id: registry.nlark.com/sequelize/6.6.5
     name: sequelize
     version: 6.6.5
     engines: {node: '>=10.0.0'}
+    peerDependencies:
+      mariadb: '*'
+      mysql2: '*'
+      pg: '*'
+      pg-hstore: '*'
+      sqlite3: '*'
+      tedious: '*'
+    peerDependenciesMeta:
+      mariadb:
+        optional: true
+      mysql2:
+        optional: true
+      pg:
+        optional: true
+      pg-hstore:
+        optional: true
+      sqlite3:
+        optional: true
+      tedious:
+        optional: true
     dependencies:
       debug: registry.nlark.com/debug/4.3.1
       dottie: registry.nlark.com/dottie/2.0.2
@@ -8292,13 +8337,17 @@ packages:
       lodash: 4.17.21
       moment: 2.29.1
       moment-timezone: 0.5.33
+      mysql2: registry.nlark.com/mysql2/2.3.0
       retry-as-promised: registry.nlark.com/retry-as-promised/3.2.0
       semver: 7.3.5
       sequelize-pool: registry.nlark.com/sequelize-pool/6.1.0
+      sqlite3: registry.nlark.com/sqlite3/5.0.2
       toposort-class: registry.nlark.com/toposort-class/1.0.1
       uuid: registry.nlark.com/uuid/8.3.2
       validator: registry.nlark.com/validator/13.6.0
       wkx: registry.nlark.com/wkx/0.5.0
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   registry.nlark.com/serialize-javascript/6.0.0:
@@ -8344,6 +8393,9 @@ packages:
     name: sqlite3
     version: 5.0.2
     requiresBuild: true
+    peerDependenciesMeta:
+      node-gyp:
+        optional: true
     dependencies:
       node-addon-api: registry.nlark.com/node-addon-api/3.2.1
       node-pre-gyp: registry.nlark.com/node-pre-gyp/0.11.0
@@ -8807,3 +8859,17 @@ packages:
       y18n: 4.0.3
       yargs-parser: 13.1.2
     dev: true
+
+  registry.npmmirror.com/axios/0.22.0:
+    resolution: {integrity: sha1-v3AsQftQ+8pFOVidg5oHcRe3myU=, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/axios/download/axios-0.22.0.tgz?cache=0&sync_timestamp=1633070166637&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Faxios%2Fdownload%2Faxios-0.22.0.tgz}
+    name: axios
+    version: 0.22.0
+    dependencies:
+      follow-redirects: registry.nlark.com/follow-redirects/1.14.4
+    dev: false
+
+  registry.npmmirror.com/jsencrypt/3.2.1:
+    resolution: {integrity: sha1-CXZpg8x2AIj/JrEv5+V0JSr5dyc=, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/jsencrypt/download/jsencrypt-3.2.1.tgz}
+    name: jsencrypt
+    version: 3.2.1
+    dev: false

@@ -79,13 +79,73 @@
 
 .login-form {
 	width: 300px;
-	height: 200px;
+	height: 250px;
+	padding: 20px 10px;
+	border-radius: 10px;
+
+	position: relative;
 
 	background-color: #fff;
 	display: flex;
 	align-items: center;
 	justify-content: space-around;
 	flex-direction: column;
+}
+
+.form-title {
+	height: .7em;
+	font-size: 24px;
+}
+
+.input-control {
+	width: 100%;
+}
+
+.input-control label {
+	display: inline-block;
+	width: 30%;
+	line-height: 1.5;
+	text-align: right;
+	padding-right: .5em;
+}
+
+.input-control input {
+	margin: 0;
+	display: inline-block;
+	width: 65%;
+	line-height: 1.5;
+	height: 1.8em;
+	padding: .3em .6em;
+	border: 1px solid #aaa;
+	background-color: #fff;
+	border-radius: .2em;
+	transition: all 0.3s;
+}
+
+.form-btn-group {
+	margin-top: 2em;
+	display: flex;
+	width: 70%;
+	justify-content: space-around;
+}
+
+.form-btn {
+	width: 5em;
+	height: 2em;
+	background-color: #fff;
+	border: 1px solid #dbdbdb;
+	border-radius: 3px;
+	color: #363636;
+	cursor: pointer;
+	justify-content: center;
+	padding: calc(.5em - 1px) 1em;
+	text-align: center;
+	white-space: nowrap;
+}
+
+.error-hint {
+	position: absolute;
+	bottom: 20%;
 }
 
 .rank-list {

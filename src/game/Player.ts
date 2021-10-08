@@ -346,8 +346,6 @@ export default class Player extends Phaser.GameObjects.Container implements IObj
     this.objectBody.setVelocity(0)
     this.objectBody.setAcceleration(0, 0)
     this.objectState = PlayerProperty.State.Dead
-
-    this.scene.scene.run(Scenes.GAMEOVER)
   }
 
   ghost (tube?: Tube) {

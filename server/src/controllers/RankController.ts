@@ -5,7 +5,7 @@ import Rank from '../models/rank'
 import encryptor from '../service/EncryptService'
 
 export const postPlayer: Router.Middleware = async (ctx, next) => {
-  const player = ctx.request.body as PlayerRequest
+  const { data: player } = ctx.request.body as {data: PlayerRequest}
   const token = generateTokenService(Date.now().toString())
   const [data] = await Rank.findOrCreate({
     where: player,

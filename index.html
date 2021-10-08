@@ -37,24 +37,22 @@
     <div class="control-item left" id="left-control"></div>
     <div class="control-item right" id="right-control"></div>
   </div>
-  <div class="login-mask hidden" id="login-mask">
+  <div class="login-mask" id="login-mask">
     <form class="login-form" id="login-form">
       <h2 class="form-title">请输入玩家名称</h2>
       <div class="input-control">
-        <label>Player 1:
-          <input type="text" name="player1" id="input-player-1"/>
-        </label>
+        <label for="input-player-1">Player 1:</label>
+        <input type="text" name="player1" id="input-player-1"/>
       </div>
       <div class="input-control">
-        <label>Player 2:
-          <input type="text" name="player2" id="input-player-2"/>
-        </label>
+        <label for="input-player-2">Player 2:</label>
+        <input type="text" name="player2" id="input-player-2"/>
       </div>
-      <div class="hidden" id="error-hint">
-        <p>请完整填写玩家民称</p>
+      <div class="hidden error-hint" id="error-hint">
+        <p>请完整填写玩家名称</p>
       </div>
-      <div>
-        <button class="form-btn" id="submit-btn">确认</button>
+      <div class="form-btn-group">
+        <button class="form-btn" style="background: #4acf7f; color: white" id="submit-btn">Go!</button>
         <button class="form-btn" type="reset">重置</button>
       </div>
     </form>
